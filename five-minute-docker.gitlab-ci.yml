@@ -1,0 +1,16 @@
+stages:
+    - build
+    - infra-provision
+    - deploy
+
+build-dockerfile:
+    image: docker:stable
+    services:
+        - docker:stable-dind
+    stage: build
+    variables:
+        IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    script:
+        - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+        - docker build . --tag $IMAGE_TAG
+        - docker push $IMAGE_TAG
