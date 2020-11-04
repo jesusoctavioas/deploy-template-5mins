@@ -1,12 +1,25 @@
 stages:
     - build
     - deploy
+    - destroy
+
+variables:
+    TF_VAR_AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+    TF_VAR_AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+    TF_VAR_AWS_REGION: ${AWS_REGION}
+    TF_VAR_ENVIRONMENT_NAME: ${CI_COMMIT_REF_SLUG}
+    TF_VAR_AWS_EC2_AMI: "ami-03657b56516ab7912" # Amazon Linux 2 SSD Volume Type
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${TF_VAR_ENVIRONMENT_NAME}
+
+cache:
+    paths:
+        - .terraform
 
 Docker Build Push:
+    stage: build
     image: docker:stable
     services:
         - docker:stable-dind
-    stage: build
     variables:
         IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     script:
@@ -16,8 +29,23 @@ Docker Build Push:
 
 AWS Provision:
     stage: build
-    script: echo "TODO Sri"
+    image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    script:
+        - gitlab-terraform init
+        - gitlab-terraform plan -lock=false # TODO is there no way around lock=false?
+        - gitlab-terraform plan-json -lock=false # TODO is there no way around lock=false?
+        - gitlab-terraform apply -lock=false # TODO is there no way around lock=false?
+    artifacts:
+        reports:
+            terraform: plan.json
 
 Deploy App:
     stage: deploy
     script: echo "TODO Sri"
+
+Destroy:
+    stage: destroy
+    image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    when: manual
+    script:
+        - gitlab-terraform destroy -auto-approve -lock=false # TODO is there no way around lock=false?
