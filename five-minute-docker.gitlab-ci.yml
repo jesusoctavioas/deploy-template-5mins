@@ -1,9 +1,8 @@
 stages:
     - build
-    - infra-provision
     - deploy
 
-build-dockerfile:
+Docker Build Push:
     image: docker:stable
     services:
         - docker:stable-dind
@@ -14,3 +13,11 @@ build-dockerfile:
         - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
         - docker build . --tag $IMAGE_TAG
         - docker push $IMAGE_TAG
+
+AWS Provision:
+    stage: build
+    script: echo "TODO Sri"
+
+Deploy App:
+    stage: deploy
+    script: echo "TODO Sri"
