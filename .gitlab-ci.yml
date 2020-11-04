@@ -1,0 +1,2 @@
+include:
+    local: five-minute-docker.gitlab-ci.yml
