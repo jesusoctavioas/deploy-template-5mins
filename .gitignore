@@ -1,0 +1,7 @@
+## sri stuff
+test-local.sh
+
+## terraform
+.tf
+*.tfstate*
+.terraform
