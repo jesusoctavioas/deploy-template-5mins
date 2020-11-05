@@ -1,5 +1,6 @@
 ## sri stuff
 test-local.sh
+tmp*
 
 ## terraform
 .tf
