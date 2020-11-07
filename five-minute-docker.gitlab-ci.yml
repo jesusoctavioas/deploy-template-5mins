@@ -55,7 +55,7 @@ Deploy App:
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) 'sudo docker container stop $(sudo docker container ps -aq) || echo "No running containers"'
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) 'sudo docker container rm $(sudo docker container ps -aq) || echo "No existing containers"'
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker run -e DATABASE_URL=$(cat tmp_database_url.txt) -d -p 80:5000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker run -e DATABASE_URL=$(cat tmp_database_url.txt) -d -p 80:$WEBAPP_PORT $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 Destroy:
     stage: destroy
