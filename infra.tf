@@ -35,6 +35,10 @@ resource "tls_private_key" "private_key" {
 resource "aws_key_pair" "key_pair" {
     key_name = "${var.ENVIRONMENT_NAME}_KEY_PAIR"
     public_key = tls_private_key.private_key.public_key_openssh
+
+    tags = {
+        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+    }
 }
 
 // EC2 Instance
@@ -78,7 +82,7 @@ resource "aws_db_instance" "postgres" {
     publicly_accessible = true
 
     tags = {
-        "Source" = "Five Minute Production"
+        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
     }
 }
 
@@ -90,6 +94,6 @@ output "database_url" {
     value = "postgres://${aws_db_instance.postgres.username}:${aws_db_instance.postgres.password}@${aws_db_instance.postgres.endpoint}/${aws_db_instance.postgres.name}"
 }
 
-output "key_pair" {
-    value = aws_key_pair.key_pair
+output "private_key" {
+    value = tls_private_key.private_key
 }

@@ -7,9 +7,9 @@ variables:
     TF_VAR_AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
     TF_VAR_AWS_SECRET_KEY: ${AWS_SECRET_KEY}
     TF_VAR_AWS_REGION: ${AWS_REGION}
-    TF_VAR_ENVIRONMENT_NAME: ${CI_COMMIT_REF_SLUG}
+    TF_VAR_ENVIRONMENT_NAME: ${CI_PROJECT_PATH_SLUG}_${CI_PROJECT_ID}_${CI_COMMIT_REF_SLUG}
     TF_VAR_AWS_EC2_AMI: "ami-03657b56516ab7912" # Amazon Linux 2 SSD Volume Type
-    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${TF_VAR_ENVIRONMENT_NAME}
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_COMMIT_REF_SLUG}
 
 cache:
     paths:
@@ -32,16 +32,30 @@ AWS Provision:
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     script:
         - gitlab-terraform init
-        - gitlab-terraform plan -lock=false # TODO is there no way around lock=false?
-        - gitlab-terraform plan-json -lock=false # TODO is there no way around lock=false?
-        - gitlab-terraform apply -lock=false # TODO is there no way around lock=false?
+        - gitlab-terraform plan -lock=false         # TODO is there no way around lock=false?
+        - gitlab-terraform plan-json -lock=false    # TODO is there no way around lock=false?
+        - gitlab-terraform apply -lock=false        # TODO is there no way around lock=false?
     artifacts:
         reports:
             terraform: plan.json
 
 Deploy App:
     stage: deploy
-    script: echo "TODO Sri"
+    image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    script:
+        - gitlab-terraform output -json > tmp_tf_output.json
+        - cat tmp_tf_output.json | jq --raw-output ".private_key.value.private_key_pem" > tmp_private_key.pem
+        - cat tmp_tf_output.json | jq --raw-output ".public_ip.value"                   > tmp_public_ip.txt
+        - cat tmp_tf_output.json | jq --raw-output ".database_url.value"                > tmp_database_url.txt
+        - chmod 0600 tmp_private_key.pem
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "uname --all"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo amazon-linux-extras install docker"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo service docker start"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) 'sudo docker container stop $(sudo docker container ps -aq)'
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) 'sudo docker container rm $(sudo docker container ps -aq)'
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker run -e DATABASE_URL=$(cat tmp_database_url.txt) -d -p 80:5000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 Destroy:
     stage: destroy
