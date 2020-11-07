@@ -7,8 +7,8 @@ variables:
     TF_VAR_AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
     TF_VAR_AWS_SECRET_KEY: ${AWS_SECRET_KEY}
     TF_VAR_AWS_REGION: ${AWS_REGION}
-    TF_VAR_ENVIRONMENT_NAME: ${CI_PROJECT_PATH_SLUG}_${CI_PROJECT_ID}_${CI_COMMIT_REF_SLUG}
     TF_VAR_AWS_EC2_AMI: "ami-03657b56516ab7912" # Amazon Linux 2 SSD Volume Type
+    TF_VAR_ENVIRONMENT_NAME: ${CI_PROJECT_PATH_SLUG}_${CI_PROJECT_ID}_${CI_COMMIT_REF_SLUG}
     TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_COMMIT_REF_SLUG}
 
 cache:
@@ -37,6 +37,8 @@ AWS Provision:
         - gitlab-terraform plan-json -lock=false
         - gitlab-terraform apply -lock=false
     artifacts:
+        paths:
+            - infra.tf
         reports:
             terraform: plan.json
 
@@ -44,7 +46,6 @@ Deploy App:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     script:
-        - gitlab-terraform init
         - gitlab-terraform output -json > tmp_tf_output.json
         - cat tmp_tf_output.json | jq --raw-output ".private_key.value.private_key_pem" > tmp_private_key.pem
         - cat tmp_tf_output.json | jq --raw-output ".public_ip.value"                   > tmp_public_ip.txt
