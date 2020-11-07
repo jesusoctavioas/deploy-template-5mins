@@ -44,6 +44,7 @@ Deploy App:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     script:
+        - gitlab-terraform init
         - gitlab-terraform output -json > tmp_tf_output.json
         - cat tmp_tf_output.json | jq --raw-output ".private_key.value.private_key_pem" > tmp_private_key.pem
         - cat tmp_tf_output.json | jq --raw-output ".public_ip.value"                   > tmp_public_ip.txt
