@@ -74,7 +74,7 @@ resource "random_password" "postgres_password" {
 resource "aws_db_instance" "postgres" {
     allocated_storage = 20
     engine = "postgres"
-    instance_class = "db.t2.small"
+    instance_class = "db.t2.micro"
     name = "db_${random_string.postgres_db.result}"
     username = "user_${random_string.postgres_username.result}"
     password = random_password.postgres_password.result
