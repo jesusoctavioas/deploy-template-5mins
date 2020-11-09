@@ -61,6 +61,12 @@ We provision for you:
 
 ## Maintainers Guide
 
+### TODO
+
+- GitLab UI Environment URLs
+- Default port 5000
+- `DB_INITIALIZE` and `DB_MIGRATE`
+
 ### Roadmap
 
 - [ ] Expose variables for consumer to tweak AWS infra attributes
