@@ -1,0 +1,10 @@
+stages:
+    - test
+
+test_python_in_five:
+    stage: test
+    trigger: gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/python-in-five
+
+test_node_in_five:
+    stage: test
+    trigger: gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/node-in-five
