@@ -64,8 +64,8 @@ Deploy App:
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) 'sudo docker container rm $(sudo docker container ps -aq) || echo "No existing containers"'
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker run --name container_webapp -e DATABASE_URL=$(cat tmp_database_url.txt) -d -p 80:$WEBAPP_PORT $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker exec -i container_webapp $DB_INITIALIZE"
-        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker exec -i container_webapp $DB_MIGRATE"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker exec -e DATABASE_URL=$(cat tmp_database_url.txt) -i container_webapp $DB_INITIALIZE"
+        - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo docker exec -e DATABASE_URL=$(cat tmp_database_url.txt) -i container_webapp $DB_MIGRATE"
     artifacts:
         reports:
             dotenv: deploy.env
