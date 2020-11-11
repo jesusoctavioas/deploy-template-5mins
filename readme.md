@@ -11,8 +11,13 @@ minutes.
     - [Usage](#usage)
     - [How It Works](#how-it-works)
         - [Stages](#stages)
+            - [Build](#build)
+            - [Deploy](#deploy)
+            - [Destroy](#destroy)
         - [Environments](#environments)
         - [Database](#database)
+        - [Port](#port)
+        - [Customizing](#customizing)
     - [Examples](#examples)
 - [Maintainers Guide](#maintainers-guide)
     - [Roadmap](#roadmap)
@@ -22,6 +27,8 @@ minutes.
 ### Assumption
 
 You have a Dockerized webapp with a `Dockerfile`.
+
+Your webapp is expected to run on port `5000`, however this can be [customized](#customizing).
 
 ### Infrastructure
 
@@ -35,7 +42,7 @@ By default, the following AWS free tier infrastructure is provisioned:
     - Postgres
     - `db.t2.micro`
     - 20gb allocated storage
-    
+
 ### Usage
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
@@ -46,30 +53,41 @@ By default, the following AWS free tier infrastructure is provisioned:
     - `GitLab Group :: Settings :: CICD :: Variables`
     - `GitLab Project :: Settings :: CICD :: Variables`
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
+
 ```yaml
 include:
     remote: https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/five-minute-docker/-/raw/master/five-minute-docker.gitlab-ci.yml
 #   template: five-minute-production.gitlab-ci.yml
 ```
+
 3. Finally, `commit` changes, `push` to GitLab
 
 ### How It Works
 
 #### Stages
 
-1. Stage: `Build`
-    - `Docker Build Push` builds the Dockerfile and pushes the image to the project specific container registry
-    - `AWS Provision` provisions the infra defined in `infra.tf`
-2. Stage: `Deploy`
-    - `Deploy App` 
-        - SSHs into EC2 instance
-        - Logs into Docker with project specific Container Registry access
-        - Pulls container image
-        - Runs container images
-        - If available, executes `DB_INITIALIZE` and `DB_MIGRATE`
-        - Finally, GitLab Environment is created for deployment
-3. Stage: `Destroy`
-    - `Destroy` is manually triggered to destroy all provisioned infrastructure
+1. Build
+2. Deploy
+3. Destroy
+   
+##### Build
+
+- `Docker Build Push` builds the Dockerfile and pushes the image to the project specific container registry
+- `AWS Provision` provisions the infra defined in `infra.tf`
+
+##### Deploy
+
+- `Deploy App`
+    - SSHs into EC2 instance
+    - Logs into Docker with project specific Container Registry access
+    - Pulls container image
+    - Runs container images
+    - If available, executes `DB_INITIALIZE` and `DB_MIGRATE`
+    - Finally, GitLab Environment is created for deployment
+
+##### Destroy
+
+- `Destroy` is manually triggered to destroy all provisioned infrastructure
 
 #### Environments
 
@@ -86,6 +104,20 @@ include:
 - Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right after `docker run`.
     - These must contain commands that are executed after deployment every time
     - These commands are executed within the Docker container
+
+#### Port
+
+By default, the containerized app's port 5000 is exposed. This can be modified by explicitly defining `WEBAPP_PORT` in
+your `.gitlab-ci.yml`
+
+#### Customizing
+
+```yaml
+variables:
+    DB_INITIALIZE: "psql -f schema.sql"
+    DB_MIGRATE: "python -m django-admin migrate"
+    WEBAPP_PORT: 3000
+```
 
 ### Examples
 
