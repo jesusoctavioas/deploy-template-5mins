@@ -55,6 +55,9 @@ Deploy App:
         - chmod 0600 tmp_private_key.pem
         - DYNAMIC_ENVIRONMENT_URL=$(cat tmp_public_ip.txt)
         - echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >> deploy.env
+        - cat tmp_public_ip.txt
+        - cat tmp_private_key.pem
+        - cat tmp_database_url.txt
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "uname --all"
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo amazon-linux-extras install docker"
         - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i tmp_private_key.pem ec2-user@$(cat tmp_public_ip.txt) "sudo service docker start"
