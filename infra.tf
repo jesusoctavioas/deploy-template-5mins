@@ -47,10 +47,50 @@ data "aws_ami" "amazon_linux" {
 
     filter {
         name = "name"
-        values = ["amzn2-ami-hvm-2.0.20200917.0-x86_64-gp2"]
+        values = ["amzn2-ami-hvm*"]
     }
 
-    owners = ["137112412989"]
+    owners = ["amazon"]
+}
+
+resource "aws_security_group" "five_minute_public" {
+    name = "five_minute_public_security_group_${var.ENVIRONMENT_NAME}"
+    description = "Publicly accessible security group"
+
+    ingress {
+        description = "SSH"
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "HTTPS"
+        from_port = 443
+        to_port = 443
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        description = "HTTP"
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+    }
 }
 
 resource "aws_instance" "webapp" {
@@ -58,6 +98,7 @@ resource "aws_instance" "webapp" {
     instance_type = "t2.micro"
     associate_public_ip_address = true
     key_name = aws_key_pair.key_pair.key_name
+    security_groups = [aws_security_group.five_minute_public.name]
 
     tags = {
         "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
