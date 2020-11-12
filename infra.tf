@@ -122,6 +122,24 @@ resource "random_password" "postgres_password" {
     special = false
 }
 
+data "aws_vpc" "default" {
+    default = true
+}
+
+resource "aws_security_group" "db_instance" {
+    name =  "${var.ENVIRONMENT_NAME}_DATABASE"
+    vpc_id = data.aws_vpc.default.id
+}
+
+resource "aws_security_group_rule" "allow_db_access" {
+    type              = "ingress"
+    from_port         = 5432
+    to_port           = 5432
+    protocol          = "tcp"
+    security_group_id = aws_security_group.db_instance.id
+    cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_db_instance" "postgres" {
     allocated_storage = 20
     engine = "postgres"
@@ -131,6 +149,8 @@ resource "aws_db_instance" "postgres" {
     password = random_password.postgres_password.result
     skip_final_snapshot = true
     publicly_accessible = true
+
+    vpc_security_group_ids = [aws_security_group.db_instance.id]
 
     tags = {
         "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
