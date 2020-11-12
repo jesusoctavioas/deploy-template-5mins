@@ -123,6 +123,8 @@ variables:
 
 - [Python w/ Flask](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/python-in-five)
 - [Node.js w/ Connect](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/node-in-five)
+- [Ruby on Rails](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/dz-rails-3/)
+- [Clojure Web App](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/clojure-web-application/)
 
 ## Maintainers Guide
 
