@@ -163,8 +163,10 @@ output "public_ip" {
 
 output "database_url" {
     value = "postgres://${aws_db_instance.postgres.username}:${aws_db_instance.postgres.password}@${aws_db_instance.postgres.endpoint}/${aws_db_instance.postgres.name}"
+    sensitive = true
 }
 
 output "private_key" {
     value = tls_private_key.private_key
+    sensitive = true
 }
