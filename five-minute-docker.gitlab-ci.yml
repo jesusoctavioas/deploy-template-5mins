@@ -33,9 +33,9 @@ AWS Provision:
     script:
         - wget https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/five-minute-docker/-/raw/master/infra.tf
         - gitlab-terraform init
-        - gitlab-terraform plan -lock=false
-        - gitlab-terraform plan-json -lock=false
-        - gitlab-terraform apply -lock=false
+        - gitlab-terraform plan
+        - gitlab-terraform plan-json
+        - gitlab-terraform apply
     artifacts:
         paths:
             - infra.tf
@@ -81,4 +81,4 @@ Destroy:
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     when: manual
     script:
-        - gitlab-terraform destroy -auto-approve -lock=false
+        - gitlab-terraform destroy -auto-approve
