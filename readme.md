@@ -3,32 +3,26 @@
 Five Minute Docker allows Dockerized applications to be deployed on production grade AWS infrastructure in under five
 minutes.
 
-## Index
-
-- [Users Guide](#users-guide)
-    - [Assumption](#assumption)
-    - [Infrastructure](#infrastructure)
-    - [Usage](#usage)
-    - [How It Works](#how-it-works)
-        - [Stages](#stages)
-            - [Build](#build)
-            - [Deploy](#deploy)
-            - [Destroy](#destroy)
-        - [Environments](#environments)
-        - [Database](#database)
-        - [Port](#port)
-        - [Customizing](#customizing)
-    - [Examples](#examples)
-- [Maintainers Guide](#maintainers-guide)
-    - [Roadmap](#roadmap)
-
-## Users Guide
+- [Assumption](#assumption)
+- [Infrastructure](#infrastructure)
+- [Usage](#usage)
+- [How It Works](#how-it-works)
+    - [Stages](#stages)
+        - [Build](#build)
+        - [Deploy](#deploy)
+        - [Destroy](#destroy)
+    - [Environments](#environments)
+    - [Database](#database)
+    - [Port](#port)
+    - [Custom Environment Variables](#custom-environment-variables)
+    - [Customizing](#configuration-example)
+- [Examples](#examples)
 
 ### Assumption
 
 You have a Dockerized webapp with a `Dockerfile`.
 
-Your webapp is expected to run on port `5000`, however this can be [customized](#customizing).
+Your webapp is expected to run on port `5000`, however this can be [configured](#configuration-example).
 
 ### Infrastructure
 
@@ -101,22 +95,38 @@ include:
 
 - `DATABASE_URL` is passed to the webapp container
     - Format: `postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}`
-- Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right after `docker run`.
+- This enables your webapp connect to the Postgres instance that was generated
+- Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right after `docker run`
     - These must contain commands that are executed after deployment every time
     - These commands are executed within the Docker container
+- `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be executed again
+    - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
+- `DB_MIGRATE` is executed on every deployment
 
 #### Port
 
 By default, the containerized app's port 5000 is exposed. This can be modified by explicitly defining `WEBAPP_PORT` in
 your `.gitlab-ci.yml`
 
-#### Customizing
+#### Custom Environment Variables
+
+Your application might need custom environment variables. These can be passed by declaring them with the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to declare `GL_VAR_HELLO=WORLD`.
+
+This can be done in two ways:
+- Define them in the `.gitlab-ci.yml` file (as shown in the [example](#configuration-example)), or 
+- Define them in the project or group environment variables set through the GitLab Web UI
+
+**Caution** Make sure your env-var values are properly escaped. The value will be wrapped in a pair of double-quotes `HELLO="world"` and improper escaping of value can break the deployment.
+
+#### Configuration Example
 
 ```yaml
 variables:
     DB_INITIALIZE: "psql -f schema.sql"
     DB_MIGRATE: "python -m django-admin migrate"
     WEBAPP_PORT: 3000
+    GL_VAR_HELLO: World
+    GL_VAR_FOO: Bar
 ```
 
 ### Examples
@@ -125,38 +135,3 @@ variables:
 - [Node.js w/ Connect](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/node-in-five)
 - [Ruby on Rails](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/dz-rails-3/)
 - [Clojure Web App](https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/clojure-web-application/)
-
-## Maintainers Guide
-
-### Roadmap
-
-- Parity with Auto DevOps?
-    - Support domain names and generate SSLs
-        - How must the user configure domain?
-        - And the corresponding email for SSL?
-            - Read GitLab user email?
-    - Deployment rollbacks
-    - Logging
-    - Monitoring
-    - Destroy environment on Merge Request `merge` event
-- Integration with GitLab stages and features:
-    - [x] Environments
-    - [x] Container Registry
-    - [x] Managed Terraform State
-    - [ ] Verify Stage
-        - [ ] Code Quality
-        - [ ] Testing & Coverage
-        - [ ] Load Testing, Web performance, Accessibility Testing
-    - [ ] Secure Stage
-        - [ ] Container Scans
-        - [ ] SAST
-        - [ ] Secrets Scans
-        - [ ] Dependency Scans
-        - [ ] License Compliance (is this relevant for target user?)
-- Support AWS free tier services
-    - [x] AWS EC2
-    - [x] AWS DB Instance
-    - [ ] Amazon S3 (Static file storage)
-    - [ ] Amazon SNS (Push messages)
-    - [ ] Amazon SES (Email service)
-    - [ ] Amazon SQS (Message queue)
