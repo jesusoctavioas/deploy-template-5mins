@@ -62,3 +62,6 @@ Destroy:
     when: manual
     script:
         - gitlab-terraform destroy -auto-approve
+
+# TODO Deploy behind Nginx
+# TODO Certbot for SSL certs

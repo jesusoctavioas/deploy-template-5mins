@@ -157,6 +157,13 @@ resource "aws_db_instance" "postgres" {
     }
 }
 
+// TODO Provide S3      File storage
+// TODO Provide SES     Email service
+// TODO Provide SNS     Push notification
+// TODO Provide SQS     Message queue
+
+// Output
+
 output "public_ip" {
     value = aws_instance.webapp.public_ip
 }
