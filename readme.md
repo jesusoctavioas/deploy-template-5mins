@@ -122,8 +122,8 @@ This can be done in two ways:
 
 ```yaml
 variables:
-    DB_INITIALIZE: "psql -f schema.sql"
-    DB_MIGRATE: "python -m django-admin migrate"
+    DB_INITIALIZE: "bundle exec rake db:setup RAILS_ENV=production"
+    DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
     WEBAPP_PORT: 3000
     GL_VAR_HELLO: World
     GL_VAR_FOO: Bar
