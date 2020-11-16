@@ -16,3 +16,11 @@ db_initialize_fail:
 db_initialize_success:
     stage: test
     trigger: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
+
+db_migrate_fail:
+    stage: test
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-fail
+
+db_migrate_success:
+    stage: test
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-success
