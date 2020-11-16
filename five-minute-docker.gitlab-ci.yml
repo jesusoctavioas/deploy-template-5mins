@@ -31,7 +31,7 @@ AWS Provision:
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     resource_group: terraform
     script:
-        - wget https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/five-minute-docker/-/raw/master/infra.tf
+        - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/infra.tf
         - gitlab-terraform init
         - gitlab-terraform plan
         - gitlab-terraform plan-json
@@ -46,7 +46,7 @@ Deploy App:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     script:
-        - wget https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/five-minute-docker/-/raw/master/deploy.sh
+        - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.sh
         - chmod a+x deploy.sh
         - ./deploy.sh
     artifacts:
