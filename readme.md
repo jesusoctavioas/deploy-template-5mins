@@ -121,11 +121,12 @@ This can be done in two ways:
 
 ```yaml
 variables:
-    DB_INITIALIZE: "bundle exec rake db:setup RAILS_ENV=production"
-    DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
-    WEBAPP_PORT: 3000
-    GL_VAR_HELLO: World
-    GL_VAR_FOO: Bar
+    DB_INITIALIZE: "bundle exec rake db:setup RAILS_ENV=production"   # executed successfully once after deployment
+    DB_INITIALIZE_REPEAT: "True"                                      # force DB_INITIALIZE execution
+    DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"    # executed after every deployment
+    WEBAPP_PORT: 3000                                                 # configure container port bindings
+    GL_VAR_HELLO: World                                               # pass custom variable to webapp
+    GL_VAR_FOO: Bar                                                   # pass custom variable to webapp
 ```
 
 ### Examples

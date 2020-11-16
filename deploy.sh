@@ -49,6 +49,14 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 
     sudo docker run --name container_webapp -e DATABASE_URL=$DATABASE_URL $GL_VARs -d -p 80:$WEBAPP_PORT $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
+    echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
+    if [ $DB_INITIALIZE_REPEAT == 'True' ]; then
+        echo \"DB_INITIALIZE_REPEAT will force repeat execution of DB_INITIALIZE\"
+        rm -f DB_INITIALIZE.success
+    else
+        echo \"DB_INITIALIZE_REPEAT not 'True'\"
+    fi
+
     if [ -z ${DB_INITIALIZE+x} ]; then
         echo \"DB_INITIALIZE is not set\"
     else
