@@ -8,3 +8,11 @@ aws_vars_exist:
 aws_vars_missing:
     stage: test
     trigger: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
+
+db_initialize_fail:
+    stage: test
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-fail
+
+db_initialize_success:
+    stage: test
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
