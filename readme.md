@@ -50,7 +50,7 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 ```yaml
 include:
-    remote: https://gitlab.com/gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/five-minute-docker/-/raw/master/five-minute-docker.gitlab-ci.yml
+    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.gitlab-ci.yml
 #   template: five-minute-production.gitlab-ci.yml
 ```
 
