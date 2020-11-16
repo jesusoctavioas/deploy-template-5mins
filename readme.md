@@ -1,4 +1,4 @@
-# Five Minute Docker
+# Deploy Template for 5 Minute Production App
 
 Five Minute Docker allows Dockerized applications to be deployed on production grade AWS infrastructure in under five
 minutes.
@@ -50,7 +50,7 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 ```yaml
 include:
-    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.gitlab-ci.yml
+    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.yml
 #   template: five-minute-production.gitlab-ci.yml
 ```
 
