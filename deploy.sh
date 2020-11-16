@@ -64,11 +64,12 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             echo \"DB_INITIALIZE previously executed and successful\"
         else
             sudo docker exec -e DATABASE_URL=$DATABASE_URL $GL_VARs -i container_webapp $DB_INITIALIZE
-            if [ $? -eq 0 ]; then
+            if [ \$? -eq 0 ]; then
                 echo \"DB_INITIALIZE successful\"
                 touch DB_INITIALIZE.success
             else
                 echo \"DB_INITIALIZE failed\"
+                exit 1
             fi
         fi
     fi
@@ -77,10 +78,11 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         echo \"DB_MIGRATE is not set\"
     else
         sudo docker exec -e DATABASE_URL=$DATABASE_URL $GL_VARs -i container_webapp $DB_MIGRATE
-        if [ $? -eq 0 ]; then
+        if [ \$? -eq 0 ]; then
             echo \"DB_MIGRATE successful\"
         else
             echo \"DB_MIGRATE failed\"
+            exit 1
         fi
     fi
 "
