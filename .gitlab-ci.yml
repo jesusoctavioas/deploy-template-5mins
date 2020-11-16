@@ -1,10 +1,10 @@
 stages:
     - test
 
-test_python_in_five:
+aws_vars_exist:
     stage: test
-    trigger: gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/python-in-five
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-exist
 
-test_node_in_five:
+aws_vars_missing:
     stage: test
-    trigger: gitlab-org/creator-pairing/5-minute-prod-app/sri-stuff/node-in-five
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
