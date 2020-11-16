@@ -15,6 +15,18 @@ cache:
     paths:
         - .terraform
 
+.needs_aws_vars:
+    rules:
+        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
+            when: on_success
+        -   when: never
+
+.needs_aws_vars_for_manual:
+    rules:
+        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
+            when: manual
+        -   when: never
+
 Docker Build:
     stage: build
     image: docker:stable
@@ -30,6 +42,7 @@ Docker Build:
 AWS Provision:
     stage: build
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    extends: .needs_aws_vars
     resource_group: terraform
     script:
         - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/infra.tf
@@ -46,6 +59,7 @@ AWS Provision:
 Deploy App:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    extends: .needs_aws_vars
     script:
         - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.sh
         - chmod a+x deploy.sh
@@ -60,9 +74,6 @@ Deploy App:
 Destroy:
     stage: destroy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
-    when: manual
+    extends: .needs_aws_vars_for_manual
     script:
         - gitlab-terraform destroy -auto-approve
-
-# TODO Deploy behind Nginx
-# TODO Certbot for SSL certs
