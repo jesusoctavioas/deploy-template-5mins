@@ -50,8 +50,7 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 ```yaml
 include:
-    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.yml
-#   template: five-minute-production.gitlab-ci.yml
+    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.yml\
 ```
 
 3. Finally, `commit` changes, `push` to GitLab
