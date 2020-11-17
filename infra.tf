@@ -15,6 +15,18 @@ variable "AWS_ACCESS_KEY" {}
 variable "AWS_SECRET_KEY" {}
 variable "AWS_REGION" {}
 variable "ENVIRONMENT_NAME" {}
+variable "POSTGRES_ALLOCATED_STORAGE" {
+    default = 20
+    type = number
+}
+variable "POSTGRES_INSTANCE_CLASS" {
+    default = "db.t2.micro"
+    type = string
+}
+variable "EC2_INSTANCE_TYPE" {
+    default = "t2.micro"
+    type = string
+}
 
 // AWS Config
 
@@ -47,10 +59,12 @@ data "aws_ami" "amazon_linux" {
 
     filter {
         name = "name"
-        values = ["amzn2-ami-hvm*"]
+        values = [
+            "amzn2-ami-hvm*"]
     }
 
-    owners = ["amazon"]
+    owners = [
+        "amazon"]
 }
 
 resource "aws_security_group" "five_minute_public" {
@@ -62,7 +76,8 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 22
         to_port = 22
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = [
+            "0.0.0.0/0"]
     }
 
     ingress {
@@ -70,7 +85,8 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 443
         to_port = 443
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = [
+            "0.0.0.0/0"]
     }
 
     ingress {
@@ -78,14 +94,16 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = [
+            "0.0.0.0/0"]
     }
 
     egress {
         from_port = 0
         to_port = 0
         protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = [
+            "0.0.0.0/0"]
     }
 
     tags = {
@@ -95,10 +113,11 @@ resource "aws_security_group" "five_minute_public" {
 
 resource "aws_instance" "webapp" {
     ami = data.aws_ami.amazon_linux.id
-    instance_type = "t2.micro"
+    instance_type = var.EC2_INSTANCE_TYPE
     associate_public_ip_address = true
     key_name = aws_key_pair.key_pair.key_name
-    security_groups = [aws_security_group.five_minute_public.name]
+    security_groups = [
+        aws_security_group.five_minute_public.name]
 
     tags = {
         "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
@@ -127,30 +146,32 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_security_group" "db_instance" {
-    name =  "${var.ENVIRONMENT_NAME}_DATABASE"
+    name = "${var.ENVIRONMENT_NAME}_DATABASE"
     vpc_id = data.aws_vpc.default.id
 }
 
 resource "aws_security_group_rule" "allow_db_access" {
-    type              = "ingress"
-    from_port         = 5432
-    to_port           = 5432
-    protocol          = "tcp"
+    type = "ingress"
+    from_port = 5432
+    to_port = 5432
+    protocol = "tcp"
     security_group_id = aws_security_group.db_instance.id
-    cidr_blocks       = ["0.0.0.0/0"]
+    cidr_blocks = [
+        "0.0.0.0/0"]
 }
 
 resource "aws_db_instance" "postgres" {
-    allocated_storage = 20
+    allocated_storage = var.POSTGRES_ALLOCATED_STORAGE
     engine = "postgres"
-    instance_class = "db.t2.micro"
+    instance_class = var.POSTGRES_INSTANCE_CLASS
     name = "db_${random_string.postgres_db.result}"
     username = "user_${random_string.postgres_username.result}"
     password = random_password.postgres_password.result
     skip_final_snapshot = true
     publicly_accessible = true
 
-    vpc_security_group_ids = [aws_security_group.db_instance.id]
+    vpc_security_group_ids = [
+        aws_security_group.db_instance.id]
 
     tags = {
         "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"

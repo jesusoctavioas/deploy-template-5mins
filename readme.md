@@ -126,6 +126,12 @@ This can be done in two ways:
 **Caution** Make sure your env-var values are properly escaped. The value will be wrapped in a pair
 of double-quotes `HELLO="world"` and improper escaping of value can break the deployment.
 
+#### Configure Infra Resources
+
+You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
+and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
+Default values are shown in the [configuration example](#configuration-example).
+
 #### Configuration Example
 
 ```yaml
@@ -146,6 +152,11 @@ variables:
     # pass custom variables to webapp
     GL_VAR_HELLO: World
     GL_VAR_FOO: Bar
+
+    # configure infra specifications
+    TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
+    TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
+    TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
 ```
 
 ### Examples
