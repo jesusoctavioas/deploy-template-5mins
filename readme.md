@@ -6,16 +6,15 @@ infrastructure in under five minutes.
 - [Assumption](#assumption)
 - [Infrastructure](#infrastructure)
 - [Usage](#usage)
-- [How It Works](#how-it-works)
-    - [Stages](#stages)
-        - [Build](#build)
-        - [Deploy](#deploy)
-        - [Destroy](#destroy)
-    - [Environments](#environments)
-    - [Database](#database)
-    - [Port](#port)
-    - [Custom Environment Variables](#custom-environment-variables)
-    - [Customizing](#configuration-example)
+- [Pipeline](#pipeline)
+- [Environments](#environments)
+- [Using the Postgres Database](#using-the-postgres-database)
+- [Using the S3 Bucket](#using-the-s3-bucket)
+- [Variables Provided to Webapp](#variables-exposed-to-webapp)
+- [Customizing the Port](#customizing-the-port)
+- [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
+- [Rollback Deployments](#rollback-deployments)
+- [List of All Configuration Variables](#list-of-all-configuration-variables)
 - [Examples](#examples)
 
 ### Assumption
@@ -23,7 +22,7 @@ infrastructure in under five minutes.
 You have a Dockerized webapp with a `Dockerfile`.
 
 Your webapp is expected to run on port `5000`, however this can
-be [configured](#configuration-example).
+be [configured](#list-of-all-configuration-variables).
 
 ### Infrastructure
 
@@ -37,6 +36,7 @@ By default, the following AWS free tier infrastructure is provisioned:
     - Postgres
     - `db.t2.micro`
     - 20gb allocated storage
+- S3 Bucket
 
 ### Usage
 
@@ -45,8 +45,6 @@ By default, the following AWS free tier infrastructure is provisioned:
         - `AWS_ACCESS_KEY`
         - `AWS_SECRET_KEY`
         - `AWS_REGION`
-    - `GitLab Group :: Settings :: CICD :: Variables`
-    - `GitLab Project :: Settings :: CICD :: Variables`
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
@@ -56,63 +54,80 @@ include:
 
 3. Finally, `commit` changes, `push` to GitLab
 
-### How It Works
+### Pipeline
 
-#### Stages
+The `include::remote` directive above includes a pipeline into your project. This pipeline is
+responsible for provisioning infrastructure, configuring and deploying your containerized webapp.
 
-1. Build
-2. Deploy
-3. Destroy
+Stages and jobs of the pipeline are explained below (in a simplified manner):
 
-##### Build
+- Stage 1: `Build`
+    - Job `Docker Build` builds the Dockerfile and pushes the image to the project specific
+      container registry
+    - Job `AWS Provision` provisions the infra defined in `infra.tf`
+- Stage 2: `Deploy`
+    - Job `Deploy App`
+        - SSHs into EC2 instance
+        - Logs into your project's container registry
+        - Pulls and runs the latest container image for that environment
+        - If configured, executes `DB_INITIALIZE` and `DB_MIGRATE`
+- Stage 3: `Destroy`
+    - Job `Destroy` can be manually triggered to destroy all provisioned infrastructure
+        - When Merge Request is merged, `Destroy` is automatically triggered to tear down the review
+          environment.
 
-- `Docker Build Push` builds the Dockerfile and pushes the image to the project specific container
-  registry
-- `AWS Provision` provisions the infra defined in `infra.tf`
+### Environments
 
-##### Deploy
-
-- `Deploy App`
-    - SSHs into EC2 instance
-    - Logs into Docker with project specific Container Registry access
-    - Pulls container image
-    - Runs container images
-    - If available, executes `DB_INITIALIZE` and `DB_MIGRATE`
-    - Finally, GitLab Environment is created for deployment
-
-##### Destroy
-
-- `Destroy` is manually triggered to destroy all provisioned infrastructure
-
-#### Environments
-
-- Multiple `environments` are supported and linked to git branching i.e. one environment per branch
-- Pipeline automatically creates environments
+- Pipeline automatically creates `environments`
+    - `environment = infrastructure + data + configuration + deployed webapp`
+- Multiple `environments` are supported
+    - `environments` are synced with git branches
+    - One environment per branch
 - Environment name matches `$CI_COMMIT_REF_SLUG` i.e. branch name or tag name, lowercased and
   slugified, for example:
     - `production` branch will create and deploy to `production` environment
     - `staging` branch will create and deploy to `staging` environment, etc.
 
-#### Database
+### Using the Postgres Database
 
 - `DATABASE_URL` is passed to the webapp container
     - Format: `postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}`
-- This enables your webapp connect to the Postgres instance that was generated
+    - This enables your webapp connect to the Postgres instance
 - Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right
   after `docker run`
-    - These must contain commands that are executed after deployment every time
+    - These must contain commands that are executed after deployment
     - These commands are executed within the Docker container
-- `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be executed
-  again
-    - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
-- `DB_MIGRATE` is executed on every deployment
+    - `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be
+      executed again
+        - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
+    - `DB_MIGRATE` is executed on every deployment
+    - Failing `DB_INITIALIZE` or `DB_MIGRATE` **will not** rollback your deployment
 
-#### Port
+### Using the S3 Bucket
+
+An S3 Bucket is generates for your webapp with `public-read` settings. The following env vars are
+made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCKET_REGIONAL_DOMAIN`.
+
+You will need your AWS credentials in addition to the S3 Bucket name for uploading content.
+
+### Variables Exposed to Webapp
+
+```yaml
+- DATABASE_URL                  # postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}
+
+- S3_BUCKET                     # Environment specific S3 bucket name
+- S3_BUCKET_DOMAIN              # Publicly accessible domain
+- S3_BUCKET_REGIONAL_DOMAIN     # Publicly accessible regional domain
+
+- GL_VAR_*                      # All variables prefixed with `GL_VAR_`
+```
+
+### Customizing the Port
 
 By default, the containerized app's port 5000 is exposed. This can be modified by explicitly
 defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
 
-#### Custom Environment Variables
+#### Providing Custom Environment Variables to Webapp
 
 Your application might need custom environment variables. These can be passed by declaring them with
 the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to
@@ -120,19 +135,25 @@ declare `GL_VAR_HELLO=WORLD`.
 
 This can be done in two ways:
 
-- Define them in the `.gitlab-ci.yml` file (as shown in the [example](#configuration-example)), or
+- Define them in the `.gitlab-ci.yml` file (as shown in
+  the [example](#list-of-all-configuration-variables)), or
 - Define them in the project or group environment variables set through the GitLab Web UI
 
 **Caution** Make sure your env-var values are properly escaped. The value will be wrapped in a pair
 of double-quotes `HELLO="world"` and improper escaping of value can break the deployment.
 
+#### Rollback Deployments
+
+- Clean way to rollback is to push a revert commit
+
 #### Configure Infra Resources
 
 You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
 and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
-Default values are shown in the [configuration example](#configuration-example).
 
-#### Configuration Example
+Default values are shown in the [configuration example](#list-of-all-configuration-variables).
+
+#### List of All Configuration Variables
 
 ```yaml
 variables:
@@ -162,4 +183,7 @@ variables:
 ### Examples
 
 Examples across multiple programming languages and web frameworks are listed in
-the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/examples)
+the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/examples).
+
+Additional experiments and test cases are located in
+the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/sandbox).
