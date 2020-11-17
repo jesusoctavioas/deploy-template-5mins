@@ -15,6 +15,7 @@ variable "AWS_ACCESS_KEY" {}
 variable "AWS_SECRET_KEY" {}
 variable "AWS_REGION" {}
 variable "ENVIRONMENT_NAME" {}
+variable "SHORT_ENVIRONMENT_NAME" {}
 variable "POSTGRES_ALLOCATED_STORAGE" {
     default = 20
     type = number
@@ -178,7 +179,17 @@ resource "aws_db_instance" "postgres" {
     }
 }
 
-// TODO Provide S3      File storage
+// S3 Bucket
+
+resource "aws_s3_bucket" "s3_bucket" {
+    bucket = "s3-bucket-${var.SHORT_ENVIRONMENT_NAME}"
+    acl = "public-read"
+
+    tags = {
+        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+    }
+}
+
 // TODO Provide SES     Email service
 // TODO Provide SNS     Push notification
 // TODO Provide SQS     Message queue
@@ -197,4 +208,16 @@ output "database_url" {
 output "private_key" {
     value = tls_private_key.private_key
     sensitive = true
+}
+
+output "s3_bucket" {
+    value = aws_s3_bucket.s3_bucket.bucket
+}
+
+output "s3_bucket_domain" {
+    value = aws_s3_bucket.s3_bucket.bucket_domain_name
+}
+
+output "s3_bucket_regional_domain" {
+    value = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
 }
