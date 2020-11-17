@@ -70,6 +70,7 @@ Deploy App:
     environment:
         name: $CI_COMMIT_REF_SLUG
         url: http://$DYNAMIC_ENVIRONMENT_URL
+        on_stop: Destroy
 
 Destroy:
     stage: destroy
@@ -77,3 +78,6 @@ Destroy:
     extends: .needs_aws_vars_for_manual
     script:
         - gitlab-terraform destroy -auto-approve
+    environment:
+        name: $CI_COMMIT_REF_SLUG
+        action: stop
