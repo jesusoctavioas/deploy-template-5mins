@@ -115,7 +115,6 @@ resource "aws_security_group" "five_minute_public" {
 resource "aws_instance" "webapp" {
     ami = data.aws_ami.amazon_linux.id
     instance_type = var.EC2_INSTANCE_TYPE
-    associate_public_ip_address = true
     key_name = aws_key_pair.key_pair.key_name
     security_groups = [
         aws_security_group.five_minute_public.name]
@@ -123,6 +122,10 @@ resource "aws_instance" "webapp" {
     tags = {
         "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
     }
+}
+
+resource "aws_eip" "public_ip" {
+    instance = aws_instance.webapp.id
 }
 
 // RDS Postgres
@@ -197,7 +200,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 // Output
 
 output "public_ip" {
-    value = aws_instance.webapp.public_ip
+    value = aws_eip.public_ip.public_ip
 }
 
 output "database_url" {

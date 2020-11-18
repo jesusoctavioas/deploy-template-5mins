@@ -28,6 +28,7 @@ be [configured](#list-of-all-configuration-variables).
 
 By default, the following AWS free tier infrastructure is provisioned:
 
+- Elastic IP
 - EC2 instance
     - Amazon Linux
     - `t2.micro`
