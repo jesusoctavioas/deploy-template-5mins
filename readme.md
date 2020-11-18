@@ -92,7 +92,11 @@ Stages and jobs of the pipeline are explained below (in a simplified manner):
 
 - `DATABASE_URL` is passed to the webapp container
     - Format: `postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}`
-    - This enables your webapp connect to the Postgres instance
+- Individual variables are also passed to the webapp container:
+    - `DATABASE_ENDPOINT`
+    - `DATABASE_USERNAME`
+    - `DATABASE_PASSWORD`
+    - `DATABASE_NAME`
 - Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right
   after `docker run`
     - These must contain commands that are executed after deployment
@@ -114,6 +118,10 @@ You will need your AWS credentials in addition to the S3 Bucket name for uploadi
 
 ```yaml
 - DATABASE_URL                  # postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}
+- DATABASE_ENDPOINT             # {db_host}:{db_port}
+- DATABASE_USERNAME             # {db_user}
+- DATABASE_PASSWORD             # {db_pass}
+- DATABASE_NAME                  # {db_name}
 
 - S3_BUCKET                     # Environment specific S3 bucket name
 - S3_BUCKET_DOMAIN              # Publicly accessible domain
