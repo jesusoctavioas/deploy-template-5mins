@@ -123,6 +123,10 @@ You will need your AWS credentials in addition to the S3 Bucket name for uploadi
 - DATABASE_PASSWORD             # {db_pass}
 - DATABASE_NAME                 # {db_name}
 
+- AWS_ACCESS_KEY                # Your AWS access key
+- AWS_SECRET_KEY                # Your AWS access key
+- AWS_REGION                    # Your AWS region
+
 - S3_BUCKET                     # Environment specific S3 bucket name
 - S3_BUCKET_DOMAIN              # Publicly accessible domain
 - S3_BUCKET_REGIONAL_DOMAIN     # Publicly accessible regional domain
