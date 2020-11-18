@@ -3,6 +3,10 @@ gitlab-terraform output -json >tf_output.json
 jq --raw-output ".public_ip.value" tf_output.json >public_ip.txt
 jq --raw-output ".private_key.value.private_key_pem" tf_output.json >private_key.pem
 jq --raw-output ".database_url.value" tf_output.json >database_url.txt
+jq --raw-output ".database_endpoint.value" tf_output.json >database_endpoint.txt
+jq --raw-output ".database_username.value" tf_output.json >database_username.txt
+jq --raw-output ".database_password.value" tf_output.json >database_password.txt
+jq --raw-output ".database_name.value" tf_output.json >database_name.txt
 jq --raw-output ".s3_bucket.value" tf_output.json >s3_bucket.txt
 jq --raw-output ".s3_bucket_domain.value" tf_output.json >s3_bucket_domain.txt
 jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json >s3_bucket_regional_domain.txt
@@ -15,19 +19,23 @@ echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
 # variables
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 DATABASE_URL=$(cat database_url.txt)
+DATABASE_ENDPOINT=$(cat database_endpoint.txt)
+DATABASE_USERNAME=$(cat database_username.txt)
+DATABASE_PASSWORD=$(cat database_password.txt)
+DATABASE_NAME=$(cat database_name.txt)
 S3_BUCKET=$(cat s3_bucket.txt)
 S3_BUCKET_DOMAIN=$(cat s3_bucket_domain.txt)
 S3_BUCKET_REGIONAL_DOMAIN=$(cat s3_bucket_regional_domain.txt)
-printenv | grep GL_VAR_ >gl_vars_demp.txt                                           # get all env vars
-sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt                    # strip GL_VAR_ prefix
-sed 's/=/="/gi' gl_vars_prefix_removed.txt >gl_vars_quoted_01.txt                   # add left quote
-sed ':a;N;$!ba;s/\n/"\n/gi' gl_vars_quoted_01.txt >gl_vars_quoted_02.txt            # add right quote
-sed ':a;N;$!ba;s/\n/ -e /gi' gl_vars_quoted_02.txt >gl_vars_no_newlines.txt         # remove newlines
-tr -d '\n' <gl_vars_no_newlines.txt >gl_vars_no_trailing_newline.txt                # remove trailing newline
-cp gl_vars_no_trailing_newline.txt gl_vars.txt                                      # prepare final gl_vars.txt file
-GL_VARs="$(cat gl_vars.txt)"                                                        # define GL_VARs
-GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                                   # handle empty state
-GL_VARs=" -e $GL_VARs\""                                                            # wrap between -e and "
+printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
+sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
+sed 's/=/="/gi' gl_vars_prefix_removed.txt >gl_vars_quoted_01.txt           # add left quote
+sed ':a;N;$!ba;s/\n/"\n/gi' gl_vars_quoted_01.txt >gl_vars_quoted_02.txt    # add right quote
+sed ':a;N;$!ba;s/\n/ -e /gi' gl_vars_quoted_02.txt >gl_vars_no_newlines.txt # remove newlines
+tr -d '\n' <gl_vars_no_newlines.txt >gl_vars_no_trailing_newline.txt        # remove trailing newline
+cp gl_vars_no_trailing_newline.txt gl_vars.txt                              # prepare final gl_vars.txt file
+GL_VARs="$(cat gl_vars.txt)"                                                # define GL_VARs
+GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                           # handle empty state
+GL_VARs=" -e $GL_VARs\""                                                    # wrap between -e and "
 echo "$GL_VARs"
 
 # execute on EC2 instance
@@ -55,6 +63,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 
     sudo docker run --name container_webapp                                 \
         -e DATABASE_URL=$DATABASE_URL                                       \
+        -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                             \
+        -e DATABASE_USERNAME=$DATABASE_USERNAME                             \
+        -e DATABASE_PASSWORD=$DATABASE_PASSWORD                             \
+        -e DATABASE_NAME=$DATABASE_NAME                                     \
         -e S3_BUCKET=$S3_BUCKET                                             \
         -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                               \
         $GL_VARs                                                            \
@@ -79,6 +91,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         else
             sudo docker exec                                                \
                 -e DATABASE_URL=$DATABASE_URL                               \
+                -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                     \
+                -e DATABASE_USERNAME=$DATABASE_USERNAME                     \
+                -e DATABASE_PASSWORD=$DATABASE_PASSWORD                     \
+                -e DATABASE_NAME=$DATABASE_NAME                             \
                 -e S3_BUCKET=$S3_BUCKET                                     \
                 -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                       \
                 -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN     \
@@ -100,6 +116,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     else
         sudo docker exec                                                    \
             -e DATABASE_URL=$DATABASE_URL                                   \
+            -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                         \
+            -e DATABASE_USERNAME=$DATABASE_USERNAME                         \
+            -e DATABASE_PASSWORD=$DATABASE_PASSWORD                         \
+            -e DATABASE_NAME=$DATABASE_NAME                                 \
             -e S3_BUCKET=$S3_BUCKET                                         \
             -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                           \
             -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN         \
