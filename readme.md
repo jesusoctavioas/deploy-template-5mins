@@ -121,7 +121,7 @@ You will need your AWS credentials in addition to the S3 Bucket name for uploadi
 - DATABASE_ENDPOINT             # {db_host}:{db_port}
 - DATABASE_USERNAME             # {db_user}
 - DATABASE_PASSWORD             # {db_pass}
-- DATABASE_NAME                  # {db_name}
+- DATABASE_NAME                 # {db_name}
 
 - S3_BUCKET                     # Environment specific S3 bucket name
 - S3_BUCKET_DOMAIN              # Publicly accessible domain
