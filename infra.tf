@@ -165,6 +165,7 @@ resource "aws_security_group_rule" "allow_db_access" {
 }
 
 resource "aws_db_instance" "postgres" {
+    apply_immediately = true
     allocated_storage = var.POSTGRES_ALLOCATED_STORAGE
     engine = "postgres"
     instance_class = var.POSTGRES_INSTANCE_CLASS
