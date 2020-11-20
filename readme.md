@@ -10,10 +10,10 @@ infrastructure in under five minutes.
 - [Environments](#environments)
 - [Using the Postgres Database](#using-the-postgres-database)
 - [Using the S3 Bucket](#using-the-s3-bucket)
-- [Variables Provided to Webapp](#variables-exposed-to-webapp)
-- [Customizing the Port](#customizing-the-port)
 - [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
+- [Variables Provided to Webapp](#variables-exposed-to-webapp)
 - [Rollback Deployments](#rollback-deployments)
+- [Customizing the Port](#customizing-the-port)
 - [List of All Configuration Variables](#list-of-all-configuration-variables)
 - [Examples](#examples)
 
@@ -105,17 +105,35 @@ Stages and jobs of the pipeline are explained below (in a simplified manner):
     - `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be
       executed again
         - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
+        - `DB_INITIALIZE` can be force-executed if `DB_INITIALIZE_REPEAT` is set to `"True"`
     - `DB_MIGRATE` is executed on every deployment
     - Failing `DB_INITIALIZE` or `DB_MIGRATE` **will not** rollback your deployment
 
 ### Using the S3 Bucket
 
-An S3 Bucket is generates for your webapp with `public-read` settings. The following env vars are
+An S3 Bucket is generated for your webapp with `public-read` settings. The following env vars are
 made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCKET_REGIONAL_DOMAIN`.
 
-You will need your AWS credentials in addition to the S3 Bucket name for uploading content.
+You will need to use your AWS credentials in addition to the S3 Bucket name for uploading content.
+
+#### Providing Custom Environment Variables to Webapp
+
+Your application might need custom environment variables. These can be passed by declaring them with
+the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to
+declare `GL_VAR_HELLO=WORLD`.
+
+This can be done in two ways:
+
+- Define them in the `.gitlab-ci.yml` file (as shown in
+  the [example](#list-of-all-configuration-variables)), or
+- Define them in the project or group environment variables set through the GitLab Web UI
+
+**Caution** Make sure your env-var values are properly escaped. The value will be wrapped in a pair
+of double-quotes `HELLO="world"` and improper escaping of value can break the deployment.
 
 ### Variables Exposed to Webapp
+
+The following variables are provided to your containerized webapp. Thus are available at runtime.
 
 ```yaml
 - DATABASE_URL                  # postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}
@@ -135,29 +153,14 @@ You will need your AWS credentials in addition to the S3 Bucket name for uploadi
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
 
+#### Rollback Deployments
+
+- Clean way to rollback is to push a revert commit
+
 ### Customizing the Port
 
 By default, the containerized app's port 5000 is exposed. This can be modified by explicitly
 defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
-
-#### Providing Custom Environment Variables to Webapp
-
-Your application might need custom environment variables. These can be passed by declaring them with
-the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to
-declare `GL_VAR_HELLO=WORLD`.
-
-This can be done in two ways:
-
-- Define them in the `.gitlab-ci.yml` file (as shown in
-  the [example](#list-of-all-configuration-variables)), or
-- Define them in the project or group environment variables set through the GitLab Web UI
-
-**Caution** Make sure your env-var values are properly escaped. The value will be wrapped in a pair
-of double-quotes `HELLO="world"` and improper escaping of value can break the deployment.
-
-#### Rollback Deployments
-
-- Clean way to rollback is to push a revert commit
 
 #### Configure Infra Resources
 
@@ -167,6 +170,10 @@ and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra 
 Default values are shown in the [configuration example](#list-of-all-configuration-variables).
 
 #### List of All Configuration Variables
+
+The following variables can be defined in your `.gitlab-ci.yml` file or be made available to the
+pipeline through any other mechanism. These variables are meant to configure the infrastructure or
+deployment process.
 
 ```yaml
 variables:
@@ -183,14 +190,14 @@ variables:
     # configure container port bindings
     WEBAPP_PORT: 3000
 
-    # pass custom variables to webapp
-    GL_VAR_HELLO: World
-    GL_VAR_FOO: Bar
-
     # configure infra specifications
     TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
     TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
     TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
+
+    # pass custom variables to webapp
+    GL_VAR_HELLO: World
+    GL_VAR_FOO: Bar
 ```
 
 ### Examples
