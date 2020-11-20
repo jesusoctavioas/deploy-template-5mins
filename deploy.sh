@@ -79,14 +79,14 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
     echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
-    if [ $DB_INITIALIZE_REPEAT == 'True' ]; then
+    if [ \"$DB_INITIALIZE_REPEAT\" == \"True\" ]; then
         echo \"DB_INITIALIZE_REPEAT will force repeat execution of DB_INITIALIZE\"
         rm -f DB_INITIALIZE.success
     else
         echo \"DB_INITIALIZE_REPEAT not 'True'\"
     fi
 
-    if [ -z ${DB_INITIALIZE+x} ]; then
+    if [ \"$DB_INITIALIZE\" == \"\" ]; then
         echo \"DB_INITIALIZE is not set\"
     else
         if [ -f DB_INITIALIZE.success ]; then
@@ -117,7 +117,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         fi
     fi
 
-    if [ -z ${DB_MIGRATE+x} ]; then
+    if [ \"$DB_MIGRATE\" == \"\" ]; then
         echo \"DB_MIGRATE is not set\"
     else
         sudo docker exec                                                    \
