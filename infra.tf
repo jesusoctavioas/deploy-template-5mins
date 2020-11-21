@@ -12,18 +12,25 @@ terraform {
 # Environment variables
 
 variable "AWS_ACCESS_KEY" {}
+
 variable "AWS_SECRET_KEY" {}
+
 variable "AWS_REGION" {}
+
 variable "ENVIRONMENT_NAME" {}
+
 variable "SHORT_ENVIRONMENT_NAME" {}
+
 variable "POSTGRES_ALLOCATED_STORAGE" {
     default = 20
     type = number
 }
+
 variable "POSTGRES_INSTANCE_CLASS" {
     default = "db.t2.micro"
     type = string
 }
+
 variable "EC2_INSTANCE_TYPE" {
     default = "t2.micro"
     type = string
@@ -64,12 +71,10 @@ data "aws_ami" "amazon_linux" {
 
     filter {
         name = "name"
-        values = [
-            "amzn2-ami-hvm*"]
+        values = ["amzn2-ami-hvm*"]
     }
 
-    owners = [
-        "amazon"]
+    owners = ["amazon"]
 }
 
 resource "aws_security_group" "five_minute_public" {
@@ -81,8 +86,7 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 22
         to_port = 22
         protocol = "tcp"
-        cidr_blocks = [
-            "0.0.0.0/0"]
+        cidr_blocks = ["0.0.0.0/0"]
     }
 
     ingress {
@@ -90,8 +94,7 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 443
         to_port = 443
         protocol = "tcp"
-        cidr_blocks = [
-            "0.0.0.0/0"]
+        cidr_blocks = ["0.0.0.0/0"]
     }
 
     ingress {
@@ -99,16 +102,14 @@ resource "aws_security_group" "five_minute_public" {
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = [
-            "0.0.0.0/0"]
+        cidr_blocks = ["0.0.0.0/0"]
     }
 
     egress {
         from_port = 0
         to_port = 0
         protocol = "-1"
-        cidr_blocks = [
-            "0.0.0.0/0"]
+        cidr_blocks = ["0.0.0.0/0"]
     }
 
     tags = {
@@ -120,8 +121,7 @@ resource "aws_instance" "webapp" {
     ami = data.aws_ami.amazon_linux.id
     instance_type = var.EC2_INSTANCE_TYPE
     key_name = aws_key_pair.key_pair.key_name
-    security_groups = [
-        aws_security_group.five_minute_public.name]
+    security_groups = [aws_security_group.five_minute_public.name]
 
     tags = {
         "Source" = local.source
@@ -172,8 +172,7 @@ resource "aws_security_group_rule" "allow_db_access" {
     to_port = 5432
     protocol = "tcp"
     security_group_id = aws_security_group.db_instance.id
-    cidr_blocks = [
-        "0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_db_instance" "postgres" {
@@ -187,8 +186,7 @@ resource "aws_db_instance" "postgres" {
     skip_final_snapshot = true
     publicly_accessible = true
 
-    vpc_security_group_ids = [
-        aws_security_group.db_instance.id]
+    vpc_security_group_ids = [aws_security_group.db_instance.id]
 
     tags = {
         "Source" = local.source
