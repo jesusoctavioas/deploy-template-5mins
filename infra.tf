@@ -9,7 +9,7 @@ terraform {
     }
 }
 
-// Environment variables
+# Environment variables
 
 variable "AWS_ACCESS_KEY" {}
 variable "AWS_SECRET_KEY" {}
@@ -33,7 +33,7 @@ locals {
     source = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
 }
 
-// AWS Config
+# AWS Config
 
 provider "aws" {
     region = var.AWS_REGION
@@ -41,7 +41,7 @@ provider "aws" {
     secret_key = var.AWS_SECRET_KEY
 }
 
-// SSH Key Pair
+# SSH Key Pair
 
 resource "tls_private_key" "private_key" {
     algorithm = "RSA"
@@ -57,7 +57,7 @@ resource "aws_key_pair" "key_pair" {
     }
 }
 
-// EC2 Instance
+# EC2 Instance
 
 data "aws_ami" "amazon_linux" {
     most_recent = true
@@ -136,7 +136,7 @@ resource "aws_eip" "public_ip" {
     }
 }
 
-// RDS Postgres
+# RDS Postgres
 
 resource "random_string" "postgres_db" {
     length = 12
@@ -195,7 +195,7 @@ resource "aws_db_instance" "postgres" {
     }
 }
 
-// S3 Bucket
+# S3 Bucket
 
 resource "aws_s3_bucket" "s3_bucket" {
     bucket = "s3-bucket-${var.SHORT_ENVIRONMENT_NAME}"
@@ -206,11 +206,11 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
 }
 
-// TODO Provide SES     Email service
-// TODO Provide SNS     Push notification
-// TODO Provide SQS     Message queue
+# TODO Provide SES     Email service
+# TODO Provide SNS     Push notification
+# TODO Provide SQS     Message queue
 
-// Output
+# Output
 
 output "public_ip" {
     value = aws_eip.public_ip.public_ip
