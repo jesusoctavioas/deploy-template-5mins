@@ -29,6 +29,10 @@ variable "EC2_INSTANCE_TYPE" {
     type = string
 }
 
+locals {
+    source = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+}
+
 // AWS Config
 
 provider "aws" {
@@ -49,7 +53,7 @@ resource "aws_key_pair" "key_pair" {
     public_key = tls_private_key.private_key.public_key_openssh
 
     tags = {
-        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+        "Source" = local.source
     }
 }
 
@@ -108,7 +112,7 @@ resource "aws_security_group" "five_minute_public" {
     }
 
     tags = {
-        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+        "Source" = local.source
     }
 }
 
@@ -120,12 +124,16 @@ resource "aws_instance" "webapp" {
         aws_security_group.five_minute_public.name]
 
     tags = {
-        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+        "Source" = local.source
     }
 }
 
 resource "aws_eip" "public_ip" {
     instance = aws_instance.webapp.id
+
+    tags = {
+        "Source" = local.source
+    }
 }
 
 // RDS Postgres
@@ -152,6 +160,10 @@ data "aws_vpc" "default" {
 resource "aws_security_group" "db_instance" {
     name = "${var.ENVIRONMENT_NAME}_DATABASE"
     vpc_id = data.aws_vpc.default.id
+
+    tags = {
+        "Source" = local.source
+    }
 }
 
 resource "aws_security_group_rule" "allow_db_access" {
@@ -179,7 +191,7 @@ resource "aws_db_instance" "postgres" {
         aws_security_group.db_instance.id]
 
     tags = {
-        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+        "Source" = local.source
     }
 }
 
@@ -190,7 +202,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     acl = "public-read"
 
     tags = {
-        "Source" = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+        "Source" = local.source
     }
 }
 
