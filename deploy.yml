@@ -31,17 +31,9 @@ cache:
             when: manual
         -   when: never
 
-Docker Build:
-    stage: build
-    image: docker:stable
-    services:
-        - docker:stable-dind
-    variables:
-        IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    script:
-        - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
-        - docker build . --tag $IMAGE_TAG
-        - docker push $IMAGE_TAG
+# Use AutoDev Ops for build stage
+include:
+  remote: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 
 AWS Provision:
     stage: build
