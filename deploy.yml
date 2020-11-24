@@ -33,7 +33,7 @@ cache:
 
 # Use AutoDev Ops for build stage
 include:
-  remote: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
+  remote: https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 
 AWS Provision:
     stage: build
