@@ -64,9 +64,6 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
 
-echo "................CI APP TAG..............."
-echo $CI_APPLICATION_TAG
-
 # pull latest container image
 # run container
 # DB_INITIALIZE
