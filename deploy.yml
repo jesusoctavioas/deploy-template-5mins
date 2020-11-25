@@ -58,7 +58,7 @@ Deploy App:
     extends: .needs_aws_vars
     resource_group: deploy
     script:
-        - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/master/deploy.sh
+        - wget https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/dz-use-autodevops-build/deploy.sh
         - chmod a+x deploy.sh
         - ./deploy.sh
     artifacts:
