@@ -38,7 +38,8 @@ GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                           # ha
 GL_VARs=" -e $GL_VARs\""                                                    # wrap between -e and "
 echo "$GL_VARs"
 
-# Set Image name
+# Set Image name. Should be in sync with AutoDevOps build stage naming.
+# Taken from https://gitlab.com/gitlab-org/gitlab/-/raw/22f5722e3f39f56b5235b5893d081f022d00fa4c/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 if [[ -z "$CI_COMMIT_TAG" ]]; then
   export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
   export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
@@ -62,6 +63,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
+
+echo "................CI APP TAG..............."
+echo $CI_APPLICATION_TAG
 
 # pull latest container image
 # run container
