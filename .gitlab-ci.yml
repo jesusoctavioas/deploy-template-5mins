@@ -3,38 +3,30 @@ stages:
 
 aws_vars_exist:
     stage: test
-    trigger:
-        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-exist
-        strategy: depend
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-exist
 
 aws_vars_missing:
     stage: test
-    trigger:
-        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
-        strategy: depend
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
 
 db_initialize_fail:
     stage: test
     trigger: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-fail
+    allow_failure: true
 
 db_initialize_success:
     stage: test
-    trigger:
-        project: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
-        strategy: depend
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
 
 db_migrate_fail:
     stage: test
     trigger: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-fail
+    allow_failure: true
 
 db_migrate_success:
     stage: test
-    trigger:
-        project: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-success
-        strategy: depend
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-success
 
 env_vars:
     stage: test
-    trigger:
-        project: gitlab-org/5-minute-production-app/sandbox/test-env-vars
-        strategy: depend
+    trigger: gitlab-org/5-minute-production-app/sandbox/test-env-vars
