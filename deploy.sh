@@ -38,6 +38,15 @@ GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                           # ha
 GL_VARs=" -e $GL_VARs\""                                                    # wrap between -e and "
 echo "$GL_VARs"
 
+# Set Image name
+if [[ -z "$CI_COMMIT_TAG" ]]; then
+  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
+  export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
+else
+  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
+  export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
+fi
+
 # execute on EC2 instance
 # install and start docker
 # log in to gitlab container registry
@@ -59,7 +68,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 # DB_INITIALIZE
 # DB_MIGRATE
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-    sudo docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    sudo docker pull $CI_APPLICATION_TAG
 
     sudo docker run --name container_webapp                                 \
         -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                                   \
@@ -76,7 +85,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
         -d                                                                  \
         -p 80:$WEBAPP_PORT                                                  \
-        $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+        $CI_APPLICATION_TAG
 
     echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
     if [ \"$DB_INITIALIZE_REPEAT\" == \"True\" ]; then
