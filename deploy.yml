@@ -1,5 +1,6 @@
 include:
     - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+    - remote: https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 
 stages:
     - build
@@ -30,10 +31,6 @@ cache:
         -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
             when: manual
         -   when: never
-
-# Use AutoDev Ops for build stage
-include:
-  remote: https://gitlab.com/gitlab-org/gitlab/-/raw/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 
 AWS Provision:
     stage: build
