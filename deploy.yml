@@ -1,6 +1,6 @@
 include:
     # workflow rules to prevent duplicate detached pipelines
-    - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+    - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
     # auto devops build
     - template: 'Jobs/Build.gitlab-ci.yml'
 
