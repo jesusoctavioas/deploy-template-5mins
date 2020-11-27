@@ -7,6 +7,7 @@ include:
 stages:
     - build
     - test
+    - provision
     - deploy
     - destroy
 
@@ -34,8 +35,8 @@ cache:
             when: manual
         -   when: never
 
-AWS Provision:
-    stage: build
+terraform_plan:
+    stage: test
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
     extends: .needs_aws_vars
     resource_group: terraform
@@ -46,14 +47,31 @@ AWS Provision:
         - gitlab-terraform init
         - gitlab-terraform plan
         - gitlab-terraform plan-json
+    artifacts:
+        paths:
+            - infra.tf
+            - plan.cache
+        reports:
+            terraform: plan.json
+
+terraform_apply:
+    stage: provision
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    extends: .needs_aws_vars
+    resource_group: terraform
+    before_script:
+        - cp /infra.tf .
+        - cp /deploy.sh .
+    script:
         - gitlab-terraform apply
     artifacts:
         paths:
             - infra.tf
+            - plan.cache
         reports:
             terraform: plan.json
 
-Deploy App:
+deploy:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
     extends: .needs_aws_vars
@@ -69,9 +87,9 @@ Deploy App:
     environment:
         name: $CI_COMMIT_REF_SLUG
         url: http://$DYNAMIC_ENVIRONMENT_URL
-        on_stop: Destroy
+        on_stop: terraform_destroy
 
-Destroy:
+terraform_destroy:
     stage: destroy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     extends: .needs_aws_vars_for_manual
