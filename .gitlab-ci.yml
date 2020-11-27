@@ -5,46 +5,46 @@ stages:
 include:
     - template: 'Jobs/Build.gitlab-ci.yml'
 
-#aws_vars_exist:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-exist
-#        branch: master
-#
-#aws_vars_missing:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
-#        branch: master
-#
-#db_initialize_fail:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-fail
-#        branch: master
-#    allow_failure: true
-#
-#db_initialize_success:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
-#        branch: master
-#
-#db_migrate_fail:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-fail
-#        branch: master
-#    allow_failure: true
-#
-#db_migrate_success:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-success
-#        branch: master
-#
-#env_vars:
-#    stage: test
-#    trigger:
-#        project: gitlab-org/5-minute-production-app/sandbox/test-env-vars
-#        branch: master
+aws_vars_exist:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-exist
+        branch: master
+
+aws_vars_missing:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-aws-vars-missing
+        branch: master
+
+db_initialize_fail:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-fail
+        branch: master
+    allow_failure: true
+
+db_initialize_success:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-db_initialize-success
+        branch: master
+
+db_migrate_fail:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-fail
+        branch: master
+    allow_failure: true
+
+db_migrate_success:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-db_migrate-success
+        branch: master
+
+env_vars:
+    stage: test
+    trigger:
+        project: gitlab-org/5-minute-production-app/sandbox/test-env-vars
+        branch: master
