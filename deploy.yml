@@ -85,6 +85,7 @@ terraform_destroy:
     stage: destroy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
     script:
+        - gitlab-terraform init
         - gitlab-terraform destroy -auto-approve
     environment:
         name: $CI_COMMIT_REF_SLUG
