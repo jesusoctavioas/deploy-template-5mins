@@ -29,12 +29,6 @@ cache:
             when: on_success
         -   when: never
 
-.needs_aws_vars_for_manual:
-    rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
-            when: manual
-        -   when: never
-
 terraform_plan:
     stage: test
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
@@ -90,9 +84,12 @@ deploy:
 terraform_destroy:
     stage: destroy
     image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
-    extends: .needs_aws_vars_for_manual
     script:
         - gitlab-terraform destroy -auto-approve
     environment:
         name: $CI_COMMIT_REF_SLUG
         action: stop
+    rules:
+        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION && $CI_COMMIT_REF_PROTECTED == "false"'
+            when: manual
+        -   when: never
