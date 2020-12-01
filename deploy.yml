@@ -56,7 +56,7 @@ terraform_plan:
 
 terraform_apply:
     stage: provision
-    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/stable
     extends: .needs_aws_vars
     resource_group: terraform
     before_script:
