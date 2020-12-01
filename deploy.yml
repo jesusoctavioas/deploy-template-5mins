@@ -83,9 +83,11 @@ deploy:
 
 terraform_destroy:
     stage: destroy
-    image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    before_script:
+        - cp /*.tf .
+        - cp /deploy.sh .
     script:
-        - gitlab-terraform init
         - gitlab-terraform destroy -auto-approve
     environment:
         name: $CI_COMMIT_REF_SLUG
