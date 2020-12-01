@@ -65,7 +65,7 @@ Stages and jobs of the pipeline are explained below (in a simplified manner):
 - Stage 1: `Build`
     - Job `Docker Build` builds the Dockerfile and pushes the image to the project specific
       container registry
-    - Job `AWS Provision` provisions the infra defined in `infra.tf`
+    - Job `AWS Provision` provisions the infra defined in `main.tf`
 - Stage 2: `Deploy`
     - Job `Deploy App`
         - SSHs into EC2 instance
