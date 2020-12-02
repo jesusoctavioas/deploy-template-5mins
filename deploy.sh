@@ -154,3 +154,12 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         fi
     fi
 "
+
+# kill running nginx process (if exists)
+# delete existing nginx conf (if exists)
+# write nginx config
+# start nginx process
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
+sudo amazon-linux-extras install nginx
+which nginx
+"
