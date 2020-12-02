@@ -1,0 +1,75 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    # redirect all traffic to ssl
+    #    server {
+    #        listen              80 default_server;
+    #        server_name         _;
+    #        return              301 https://$host$request_uri;
+    #    }
+
+    # temporarily serve 80
+    server {
+        listen              80 default_server;
+        server_name         _;
+
+        error_log               /five-min/logs/container_webapp_error_nginx.log warn;
+        access_log              /five-min/logs/container_webapp_access_nginx.log;
+
+        location / {
+            proxy_set_header    Host $http_host;
+            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header    X-Forwarded-Proto $scheme;
+            proxy_redirect      off;
+            proxy_buffering     off;
+            proxy_pass          http://docker_upstream;
+        }
+    }
+
+    upstream docker_upstream {
+        server                  localhost:8000;
+    }
+
+    #    server {
+    #        listen                  443 ssl;
+    #        server_name             $PUBLIC_IP $DOMAINS;
+    #        ssl_certificate         /five-min/certs/unofficial.gitlab.tools/fullchain.pem;
+    #        ssl_certificate_key     /five-min/certs/unofficial.gitlab.tools/privkey.pem;
+    #
+#        error_log               /five-min/logs/container_webapp_error_nginx.log warn;
+    #        access_log              /five-min/logs/container_webapp_access_nginx.log;
+    #
+#        location / {
+    #            proxy_set_header    Host $http_host;
+    #            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+    #            proxy_set_header    X-Forwarded-Proto $scheme;
+    #            proxy_redirect      off;
+    #            proxy_buffering     off;
+    #            proxy_pass          http://docker_upstream;
+    #        }
+    #    }
+}
