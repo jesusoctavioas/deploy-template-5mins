@@ -86,7 +86,6 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
         -d                                                                  \
         -p 80:$WEBAPP_PORT                                                  \
-        -p 443:$WEBAPP_PORT                                                 \
         $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
@@ -160,6 +159,6 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 # write nginx config
 # start nginx process
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-sudo amazon-linux-extras install nginx1
+sudo amazon-linux-extras install nginx1 -y
 which nginx
 "
