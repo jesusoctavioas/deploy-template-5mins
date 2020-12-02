@@ -160,5 +160,5 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 # start nginx process
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
 sudo amazon-linux-extras install nginx1 -y
-nginx -v
+nginx1 -v
 "
