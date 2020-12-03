@@ -161,4 +161,8 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
 sudo yum install nginx -y
 sudo nginx -v
+rm -f conf.nginx
+echo \"$(cat conf.nginx)\" >conf.nginx
+ls -al
+cat conf.nginx
 "
