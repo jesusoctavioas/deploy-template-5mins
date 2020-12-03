@@ -71,6 +71,7 @@ deploy:
     before_script:
         - cp /*.tf .
         - cp /deploy.sh .
+        - cp /conf.nginx .
     script:
         - ./deploy.sh
     artifacts:
