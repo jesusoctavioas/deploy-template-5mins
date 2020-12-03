@@ -160,11 +160,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 # write nginx config
 # start nginx process
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-sudo yum install nginx -y
+sudo amazon-linux-extras install nginx1 -y
 sudo nginx -v
 rm -f conf.nginx
 echo \"$NGINX_CONF\" >conf.nginx
 ls -al
 cat conf.nginx
-cat .bashrc
 "
