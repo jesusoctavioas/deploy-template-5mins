@@ -26,6 +26,7 @@ DATABASE_NAME=$(cat database_name.txt)
 S3_BUCKET=$(cat s3_bucket.txt)
 S3_BUCKET_DOMAIN=$(cat s3_bucket_domain.txt)
 S3_BUCKET_REGIONAL_DOMAIN=$(cat s3_bucket_regional_domain.txt)
+NGINX_CONF=$(cat conf.nginx)
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
 sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
 sed 's/=/="/gi' gl_vars_prefix_removed.txt >gl_vars_quoted_01.txt           # add left quote
@@ -162,7 +163,8 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 sudo yum install nginx -y
 sudo nginx -v
 rm -f conf.nginx
-echo \"$(cat conf.nginx)\" >conf.nginx
+echo \"$NGINX_CONF\" >conf.nginx
 ls -al
 cat conf.nginx
+cat .bashrc
 "
