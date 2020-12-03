@@ -165,6 +165,6 @@ sudo nginx -v
 rm -f conf.nginx
 echo \"$NGINX_CONF\" >conf.nginx
 sudo nginx -s stop && echo 'nginx: stopped'
-sudo nginx -t -c conf.nginx
-sudo nginx -c conf.nginx && echo 'nginx: started'
+sudo nginx -t -c ./conf.nginx
+sudo nginx -c ./conf.nginx && echo 'nginx: started'
 "
