@@ -200,6 +200,10 @@ variables:
     GL_VAR_FOO: Bar
 ```
 
+#### Cleanup
+
+The pipeline includes `destroy` job that will remove all infrastructure created by `terraform_apply`. To prevent accidental removal of production data, we disabled `destroy` job on protected branches. However you can always start pipeline with `CI_COMMIT_REF_PROTECTED` variable set to `false`. This will add `destroy` job to pipeline (you still need to manually trigger it) so you can remove infrastructure even on protected branch.
+
 ### Examples
 
 Examples across multiple programming languages and web frameworks are listed in

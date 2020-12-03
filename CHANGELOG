@@ -1,0 +1,6 @@
+1.0.0
+- Create infrastructure: EC2, RDS (Postgres), S3
+- Deploy and run app as docker container inside the EC2 instance
+- Allow instance size change with the variable
+- Allow passing variables inside the app inside the EC2
+- Pass DATABASE_URL and AWS vars to the app inside the EC2 

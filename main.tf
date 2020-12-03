@@ -171,6 +171,7 @@ resource "aws_db_instance" "postgres" {
 resource "aws_s3_bucket" "s3_bucket" {
     bucket = "s3-bucket-${var.SHORT_ENVIRONMENT_NAME}"
     acl = "public-read"
+    force_destroy = true
 
     tags = {
         "Source" = local.source
