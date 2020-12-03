@@ -82,6 +82,8 @@ deploy:
         on_stop: terraform_destroy
 
 terraform_destroy:
+    variables:
+        GIT_STRATEGY: none
     stage: destroy
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
     before_script:
