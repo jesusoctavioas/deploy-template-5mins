@@ -1,4 +1,4 @@
-user www-data;
+user ec2-user;
 worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
@@ -37,15 +37,7 @@ http {
         listen              80 default_server;
         server_name         _;
 
-        error_log               /five-min/logs/container_webapp_error_nginx.log warn;
-        access_log              /five-min/logs/container_webapp_access_nginx.log;
-
         location / {
-            proxy_set_header    Host $http_host;
-            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header    X-Forwarded-Proto $scheme;
-            proxy_redirect      off;
-            proxy_buffering     off;
             proxy_pass          http://docker_upstream;
         }
     }
