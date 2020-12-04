@@ -24,12 +24,12 @@ variable "EC2_INSTANCE_TYPE" {
 }
 
 variable "CERT_DOMAIN" {
-    default = "empty"
+    default = ""
     type = string
 }
 
 variable "CERT_ALTERNATIVE_DOMAINS" {
-    default = "[]"
+    default = []
     type = set(string)
 }
 
