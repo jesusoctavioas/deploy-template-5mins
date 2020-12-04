@@ -29,7 +29,7 @@ variable "CERT_DOMAIN" {
 }
 
 variable "CERT_ALTERNATIVE_DOMAINS" {
-    default = "empty"
+    default = "[]"
     type = set(string)
 }
 
