@@ -49,18 +49,21 @@ else
     export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
 fi
 
-# execute on EC2 instance
+# update package repos
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo apt update
+    sudo snap update
+"
+
 # install and start docker
 # log in to gitlab container registry
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-    sudo amazon-linux-extras install docker
-    sudo service docker start
-
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo snap install docker
     sudo docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
- "
+"
 
 # stop and remove all existing containers
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" '
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
@@ -69,7 +72,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 # run container
 # DB_INITIALIZE
 # DB_MIGRATE
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
     sudo docker pull $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     sudo docker run --name container_webapp                                 \
@@ -86,7 +89,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         $GL_VARs                                                            \
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
         -d                                                                  \
-        -p 8000:$WEBAPP_PORT                                                  \
+        -p 8000:$WEBAPP_PORT                                                \
         $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
@@ -155,18 +158,20 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     fi
 "
 
-# kill running nginx process (if exists)
+# install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
-# start nginx process
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-    sudo amazon-linux-extras install nginx1 -y
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo apt install nginx -y
     sudo nginx -v
     rm -f conf.nginx
     echo \"$NGINX_CONF\" >conf.nginx
 "
 
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" '
+# kill running nginx process (if exists)
+# test nginx config
+# start nginx process
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
     sudo nginx -s stop && echo "nginx: stopped"
     sudo nginx -t -c $(pwd)/conf.nginx
     sudo nginx -c $(pwd)/conf.nginx && echo "nginx: started"

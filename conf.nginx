@@ -1,4 +1,4 @@
-user ec2-user;
+user ubuntu;
 worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;

@@ -10,7 +10,9 @@ terraform {
 }
 
 locals {
-    source = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+    common_tags = {
+        source = "Five Minute Production - ${var.ENVIRONMENT_NAME}"
+    }
 }
 
 # AWS Config
@@ -32,23 +34,28 @@ resource "aws_key_pair" "key_pair" {
     key_name = "${var.ENVIRONMENT_NAME}_KEY_PAIR"
     public_key = tls_private_key.private_key.public_key_openssh
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 # EC2 Instance
 
-data "aws_ami" "amazon_linux" {
+data "aws_ami" "ubuntu_20_04" {
     most_recent = true
 
     filter {
         name = "name"
-        values = ["amzn2-ami-hvm*"]
+        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
     }
 
-    owners = ["amazon"]
+    filter {
+        name = "virtualization-type"
+        values = ["hvm"]
+    }
+
+    # Canonical
+    owners = ["099720109477"]
 }
+
 
 resource "aws_security_group" "five_minute_public" {
     name = "five_minute_public_security_group_${var.ENVIRONMENT_NAME}"
@@ -85,28 +92,22 @@ resource "aws_security_group" "five_minute_public" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 resource "aws_instance" "webapp" {
-    ami = data.aws_ami.amazon_linux.id
+    ami = data.aws_ami.ubuntu_20_04.id
     instance_type = var.EC2_INSTANCE_TYPE
     key_name = aws_key_pair.key_pair.key_name
     security_groups = [aws_security_group.five_minute_public.name]
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 resource "aws_eip" "public_ip" {
     instance = aws_instance.webapp.id
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 # RDS Postgres
@@ -134,9 +135,7 @@ resource "aws_security_group" "db_instance" {
     name = "${var.ENVIRONMENT_NAME}_DATABASE"
     vpc_id = data.aws_vpc.default.id
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 resource "aws_security_group_rule" "allow_db_access" {
@@ -161,9 +160,7 @@ resource "aws_db_instance" "postgres" {
 
     vpc_security_group_ids = [aws_security_group.db_instance.id]
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
 
 # S3 Bucket
@@ -173,11 +170,5 @@ resource "aws_s3_bucket" "s3_bucket" {
     acl = "public-read"
     force_destroy = true
 
-    tags = {
-        "Source" = local.source
-    }
+    tags = local.common_tags
 }
-
-# TODO Provide SES     Email service
-# TODO Provide SNS     Push notification
-# TODO Provide SQS     Message queue
