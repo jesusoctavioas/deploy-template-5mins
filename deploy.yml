@@ -30,6 +30,11 @@ cache:
             when: on_success
         -   when: never
 
+.needs_domain_and_protected_branch:
+    rules:
+        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
+            when: manual
+
 terraform_plan:
     stage: test
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
@@ -85,19 +90,23 @@ deploy:
 
 setup_instructions:
     stage: domain
-    rules:
-        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
-            when: on_success
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    extends: .needs_domain_and_protected_branch
+    before_script:
+        - cp /*.tf .
+        - cp /setup_instructions.sh .
     script:
-        - echo "TODO setup_instructions"
+        - ./setup_instructions.sh
 
 ssl_certificate:
     stage: domain
-    rules:
-        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
-            when: manual
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    extends: .needs_domain_and_protected_branch
+    before_script:
+        - cp /*.tf .
+        - cp /ssl_certificate.sh .
     script:
-        - echo "TODO ssl_certificate"
+        - ./ssl_certificate.sh
 
 terraform_destroy:
     variables:
