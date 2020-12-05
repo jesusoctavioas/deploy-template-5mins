@@ -22,18 +22,3 @@ variable "EC2_INSTANCE_TYPE" {
     default = "t2.micro"
     type = string
 }
-
-variable "CERT_DOMAIN" {
-    default = ""
-    type = string
-}
-
-variable "CERT_ALTERNATIVE_DOMAINS" {
-    default = []
-    type = set(string)
-}
-
-variable "CERT_RENEW" {
-    default = false
-    type = bool
-}
