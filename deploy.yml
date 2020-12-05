@@ -32,7 +32,7 @@ cache:
 
 .needs_domain_and_protected_branch:
     rules:
-        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
+        -   if: '$CERT_DOMAINS && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
             when: manual
 
 terraform_plan:
