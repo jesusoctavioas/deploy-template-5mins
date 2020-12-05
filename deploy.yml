@@ -9,6 +9,7 @@ stages:
     - test
     - provision
     - deploy
+    - domain
     - destroy
 
 variables:
@@ -81,6 +82,22 @@ deploy:
         name: $CI_COMMIT_REF_SLUG
         url: http://$DYNAMIC_ENVIRONMENT_URL
         on_stop: terraform_destroy
+
+setup_instructions:
+    stage: domain
+    rules:
+        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
+            when: on_success
+    script:
+        - echo "TODO setup_instructions"
+
+ssl_certificate:
+    stage: domain
+    rules:
+        -   if: '$DOMAIN && $CI_COMMIT_REF_PROTECTED == "true"'
+            when: manual
+    script:
+        - echo "TODO ssl_certificate"
 
 terraform_destroy:
     variables:
