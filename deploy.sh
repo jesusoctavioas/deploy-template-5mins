@@ -55,6 +55,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo snap update
 "
 
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # install and start docker
 # log in to gitlab container registry
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
@@ -62,11 +66,19 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
 "
 
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # stop and remove all existing containers
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 # pull latest container image
 # run container
@@ -158,6 +170,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     fi
 "
 
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
@@ -168,6 +184,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     echo \"$NGINX_CONF\" >conf.nginx
 "
 
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # kill running nginx process (if exists)
 # test nginx config
 # start nginx process
@@ -176,3 +196,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo nginx -t -c $(pwd)/conf.nginx
     sudo nginx -c $(pwd)/conf.nginx && echo "nginx: started"
 '
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
