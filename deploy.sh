@@ -52,7 +52,7 @@ fi
 # update package repos
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
     sudo apt update
-    sudo snap update
+    sudo snap refresh
 "
 
 if [ $? -ne 0 ]; then
