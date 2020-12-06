@@ -21,11 +21,19 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo nginx -v
     rm -f conf.nginx
     echo \"$NGINX_CONF\" >conf.nginx
-    sudo nginx -s stop && echo 'nginx: stopped'
 "
 
 if [ $? -ne 0 ]; then
     exit 1
+fi
+
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo nginx -s stop && echo 'nginx: stopped'
+"
+
+if [ $? -ne 0 ]; then
+    echo "nginx could not be stopped, but that's okay"
 fi
 
 # update package repos
