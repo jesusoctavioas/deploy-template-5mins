@@ -15,7 +15,20 @@ chmod 0600 private_key.pem
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
     sudo snap refresh
     sudo snap install --classic certbot
-    sudo certbot --nginx --agree-tos --email $CERT_EMAIL --domains $CERT_DOMAINS --non-interactive
+
+    sudo nginx -s stop && echo 'nginx: stopped'
+
+    sudo certbot certonly \
+        --non-interactive\
+        --agree-tos\
+        --email $CERT_EMAIL \
+        --domains $CERT_DOMAINS \
+        --cert-name webapp_cert \
+        --cert-path /home/ubuntu/cert.file
+
+    ls -al
+
+    sudo nginx -c $(pwd)/conf.nginx && echo 'nginx: started'
 "
 
 if [ $? -ne 0 ]; then
