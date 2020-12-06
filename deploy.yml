@@ -32,7 +32,7 @@ cache:
 
 .needs_domain_and_protected_branch:
     rules:
-        -   if: '$CERT_DOMAINS && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
+        -   if: '$CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
             when: manual
 
 terraform_plan:
@@ -107,6 +107,10 @@ ssl_certificate:
         - cp /ssl_certificate.sh .
     script:
         - ./ssl_certificate.sh
+    environment:
+        name: $CI_COMMIT_REF_SLUG
+        url: https://$CERT_DOMAIN
+        on_stop: terraform_destroy
 
 terraform_destroy:
     variables:

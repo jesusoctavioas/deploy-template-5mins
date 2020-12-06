@@ -2,7 +2,7 @@
 # it is executed by a job named `ssl_certificate`
 #
 # assumptions:
-# - variable CERT_DOMAINS and CERT_EMAIL are defined
+# - variable CERT_DOMAIN and CERT_EMAIL are defined
 # - this is running on protected branch
 # - tf files and state are available with valid `public_ip` output in tf_state
 
@@ -20,14 +20,14 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 
     sudo certbot certonly                               \
         --non-interactive                               \
-        --standalone                                   \
+        --standalone                                    \
         --agree-tos                                     \
         --email $CERT_EMAIL                             \
-        --domains $CERT_DOMAINS                         \
-        --cert-name webapp_cert                         \
-        --cert-path /home/ubuntu/cert.file
+        --domains $CERT_DOMAIN                          \
+        --cert-name webapp_cert
 
-    ls -al
+    sudo chown ubuntu /etc/letsencrypt/live/webapp_cert/fullchain.pem
+    sudo chown ubuntu /etc/letsencrypt/live/webapp_cert/privkey.pem
 
     sudo nginx -c ~/conf.nginx && echo 'nginx: started'
 "

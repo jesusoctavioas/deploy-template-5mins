@@ -2,7 +2,7 @@
 # it is executed by a job named `setup_instructions`
 #
 # assumptions:
-# - variable CERT_DOMAINS and CERT_EMAIL are defined
+# - variable CERT_DOMAIN and CERT_EMAIL are defined
 # - this is running on protected branch
 # - tf files and state are available with valid `public_ip` output in tf_state
 
