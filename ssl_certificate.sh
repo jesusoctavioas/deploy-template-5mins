@@ -18,17 +18,18 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 
     sudo nginx -s stop && echo 'nginx: stopped'
 
-    sudo certbot certonly \
-        --non-interactive\
-        --agree-tos\
-        --email $CERT_EMAIL \
-        --domains $CERT_DOMAINS \
-        --cert-name webapp_cert \
+    sudo certbot certonly                               \
+        --non-interactive                               \
+        -- standalone                                   \
+        --agree-tos                                     \
+        --email $CERT_EMAIL                             \
+        --domains $CERT_DOMAINS                         \
+        --cert-name webapp_cert                         \
         --cert-path /home/ubuntu/cert.file
 
     ls -al
 
-    sudo nginx -c $(pwd)/conf.nginx && echo 'nginx: started'
+    sudo nginx -c ~/conf.nginx && echo 'nginx: started'
 "
 
 if [ $? -ne 0 ]; then
