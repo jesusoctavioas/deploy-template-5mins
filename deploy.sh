@@ -26,7 +26,6 @@ DATABASE_NAME=$(cat database_name.txt)
 S3_BUCKET=$(cat s3_bucket.txt)
 S3_BUCKET_DOMAIN=$(cat s3_bucket_domain.txt)
 S3_BUCKET_REGIONAL_DOMAIN=$(cat s3_bucket_regional_domain.txt)
-NGINX_CONF=$(cat conf.nginx)
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
 sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
 sed 's/=/="/gi' gl_vars_prefix_removed.txt >gl_vars_quoted_01.txt           # add left quote
@@ -168,33 +167,6 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         fi
     fi
 "
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-
-# install nginx
-# delete existing nginx conf (if exists)
-# write nginx config
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
-    sudo apt install nginx -y
-    sudo nginx -v
-    rm -f conf.nginx
-    echo \"$NGINX_CONF\" >conf.nginx
-"
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-
-# kill running nginx process (if exists)
-# test nginx config
-# start nginx process
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
-    sudo nginx -s stop && echo "nginx: stopped"
-    sudo nginx -t -c ~/conf.nginx
-    sudo nginx -c ~/conf.nginx && echo "nginx: started"
-'
 
 if [ $? -ne 0 ]; then
     exit 1
