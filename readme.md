@@ -14,7 +14,9 @@ infrastructure in under five minutes.
 - [Variables Provided to Webapp](#variables-exposed-to-webapp)
 - [Rollback Deployments](#rollback-deployments)
 - [Customizing the Port](#customizing-the-port)
+- [Configure Infra Resources](#configure-infra-resources)
 - [List of All Configuration Variables](#list-of-all-configuration-variables)
+- [Enabling SSL](#enabling-ssl)
 - [Examples](#examples)
 
 ### Assumption
@@ -116,7 +118,7 @@ made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCK
 
 You will need to use your AWS credentials in addition to the S3 Bucket name for uploading content.
 
-#### Providing Custom Environment Variables to Webapp
+### Providing Custom Environment Variables to Webapp
 
 Your application might need custom environment variables. These can be passed by declaring them with
 the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to
@@ -153,7 +155,7 @@ The following variables are provided to your containerized webapp. Thus are avai
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
 
-#### Rollback Deployments
+### Rollback Deployments
 
 - Clean way to rollback is to push a revert commit
 
@@ -162,14 +164,14 @@ The following variables are provided to your containerized webapp. Thus are avai
 By default, the containerized app's port 5000 is exposed. This can be modified by explicitly
 defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
 
-#### Configure Infra Resources
+### Configure Infra Resources
 
 You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
 and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
 
 Default values are shown in the [configuration example](#list-of-all-configuration-variables).
 
-#### List of All Configuration Variables
+### List of All Configuration Variables
 
 The following variables can be defined in your `.gitlab-ci.yml` file or be made available to the
 pipeline through any other mechanism. These variables are meant to configure the infrastructure or
@@ -194,15 +196,27 @@ variables:
     TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
     TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
     TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
+    
+    # ssl certificates
+    CERT_DOMAIN: 'my-domain.com'
+    CERT_EMAIL: 'admin@my-domain.com`
 
     # pass custom variables to webapp
     GL_VAR_HELLO: World
     GL_VAR_FOO: Bar
 ```
 
-#### Cleanup
+### Cleanup
 
 The pipeline includes `destroy` job that will remove all infrastructure created by `terraform_apply`. To prevent accidental removal of production data, we disabled `destroy` job on protected branches. However you can always start pipeline with `CI_COMMIT_REF_PROTECTED` variable set to `false`. This will add `destroy` job to pipeline (you still need to manually trigger it) so you can remove infrastructure even on protected branch.
+
+### Enabling SSL
+
+- Provide two variables `CERT_DOMAIN` and `CERT_EMAIL` to your pipeline. Typically, done by adding vars to `.gitlab-ci.yl`.
+- SSL Certificate jobs are only enabled on protected branches. By default `master` branch is protected. 
+- Execute the `setup_instructions` job in the pipeline. View the job logs for instruction on how to configure DNS records for your domain.
+- Add DNS records are described in `setup_instructions`. This is usually done with your domain registrar, or any other service that you use to manage network settings for your domains.
+- Execute the `ssl_certificate` job.
 
 ### Examples
 
