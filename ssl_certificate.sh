@@ -20,7 +20,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 
     sudo certbot certonly                               \
         --non-interactive                               \
-        -- standalone                                   \
+        --standalone                                   \
         --agree-tos                                     \
         --email $CERT_EMAIL                             \
         --domains $CERT_DOMAINS                         \
