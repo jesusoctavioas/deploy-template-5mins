@@ -44,6 +44,9 @@ http {
         ssl_certificate_key     /etc/letsencrypt/live/webapp_cert/privkey.pem;
 
         location / {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
             proxy_pass          http://docker_upstream;
         }
     }
