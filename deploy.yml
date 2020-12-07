@@ -30,9 +30,9 @@ cache:
             when: on_success
         -   when: never
 
-.needs_domain_and_protected_branch:
+.needs_aws_domain_protected_branch:
     rules:
-        -   if: '$CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
+        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION && $CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
             when: manual
 
 terraform_plan:
@@ -90,7 +90,7 @@ deploy:
 setup_instructions:
     stage: domain
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
-    extends: .needs_domain_and_protected_branch
+    extends: .needs_aws_domain_protected_branch
     before_script:
         - cp /*.tf .
         - cp /setup_instructions.sh .
@@ -100,7 +100,7 @@ setup_instructions:
 ssl_certificate:
     stage: domain
     image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
-    extends: .needs_domain_and_protected_branch
+    extends: .needs_aws_domain_protected_branch
     before_script:
         - cp /*.tf .
         - cp /conf.nginx .
