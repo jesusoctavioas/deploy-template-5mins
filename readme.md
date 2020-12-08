@@ -6,7 +6,6 @@ infrastructure in under five minutes.
 - [Assumption](#assumption)
 - [Infrastructure](#infrastructure)
 - [Usage](#usage)
-- [Pipeline](#pipeline)
 - [Environments](#environments)
 - [Using the Postgres Database](#using-the-postgres-database)
 - [Using the S3 Bucket](#using-the-s3-bucket)
@@ -56,28 +55,6 @@ include:
 ```
 
 3. Finally, `commit` changes, `push` to GitLab
-
-### Pipeline
-
-The `include::remote` directive above includes a pipeline into your project. This pipeline is
-responsible for provisioning infrastructure, configuring and deploying your containerized webapp.
-
-Stages and jobs of the pipeline are explained below (in a simplified manner):
-
-- Stage 1: `Build`
-    - Job `Docker Build` builds the Dockerfile and pushes the image to the project specific
-      container registry
-    - Job `AWS Provision` provisions the infra defined in `main.tf`
-- Stage 2: `Deploy`
-    - Job `Deploy App`
-        - SSHs into EC2 instance
-        - Logs into your project's container registry
-        - Pulls and runs the latest container image for that environment
-        - If configured, executes `DB_INITIALIZE` and `DB_MIGRATE`
-- Stage 3: `Destroy`
-    - Job `Destroy` can be manually triggered to destroy all provisioned infrastructure
-        - When Merge Request is merged, `Destroy` is automatically triggered to tear down the review
-          environment.
 
 ### Environments
 
