@@ -174,8 +174,10 @@ fi
 
 
 if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
+    echo "with ssl"
     NGINX_CONF=$(cat conf.nginx)
 else
+    echo "no ssl"
     NGINX_CONF=$(cat nossl.conf.nginx)
 fi
 
