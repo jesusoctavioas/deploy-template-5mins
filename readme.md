@@ -176,7 +176,7 @@ variables:
     
     # ssl certificates
     CERT_DOMAIN: 'my-domain.com'
-    CERT_EMAIL: 'admin@my-domain.com`
+    CERT_EMAIL: 'admin@my-domain.com'
 
     # pass custom variables to webapp
     GL_VAR_HELLO: World
