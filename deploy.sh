@@ -172,15 +172,21 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
+if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
+    NGINX_CONF=$(cat conf.nginx)
+else
+    NGINX_CONF=$(cat nossl.conf.nginx)
+fi
+
 # install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
-NGINX_CONF=$(cat nossl.conf.nginx)
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
     sudo apt install nginx -y
     sudo nginx -v
-    rm -f nossl.conf.nginx
-    echo \"$NGINX_CONF\" >nossl.conf.nginx
+    rm -f conf.nginx
+    echo \"$NGINX_CONF\" >conf.nginx
 "
 
 if [ $? -ne 0 ]; then
@@ -199,8 +205,8 @@ fi
 # test nginx config
 # start nginx process
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
-    sudo nginx -t -c ~/nossl.conf.nginx
-    sudo nginx -c ~/nossl.conf.nginx && echo "nginx: started"
+    sudo nginx -t -c ~/conf.nginx
+    sudo nginx -c ~/conf.nginx && echo "nginx: started"
 '
 
 if [ $? -ne 0 ]; then
