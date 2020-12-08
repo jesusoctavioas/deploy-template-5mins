@@ -171,7 +171,7 @@ fi
 if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
     echo "with ssl"
     NGINX_CONF=$(cat conf.nginx)
-    DYNAMIC_ENVIRONMENT_URL=https://$(cat public_ip.txt)
+    DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 else
     echo "no ssl"
     NGINX_CONF=$(cat nossl.conf.nginx)
