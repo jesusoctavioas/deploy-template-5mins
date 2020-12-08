@@ -36,7 +36,6 @@ cp gl_vars_no_trailing_newline.txt gl_vars.txt                              # pr
 GL_VARs="$(cat gl_vars.txt)"                                                # define GL_VARs
 GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                           # handle empty state
 GL_VARs=" -e $GL_VARs\""                                                    # wrap between -e and "
-echo "$GL_VARs"
 
 # Set Image name. Should be in sync with AutoDevOps build stage naming.
 # Taken from https://gitlab.com/gitlab-org/gitlab/-/raw/22f5722e3f39f56b5235b5893d081f022d00fa4c/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
