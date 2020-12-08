@@ -167,7 +167,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-
 if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
     echo "with ssl"
     NGINX_CONF=$(cat conf.nginx)
@@ -212,5 +211,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 '
 
 if [ $? -ne 0 ]; then
-    exit 1
+    echo "Failed to start Nginx."
+    echo "If you have SSL enabled and deploying for the first time, please follow subsequent steps."
+    echo "Verify that your webapp can be accessed at http://$(cat public_ip.txt):8000 or http://$(cat public_ip.txt):80"
+else
+    echo "Nginx running and webapp being served at $DYNAMIC_ENVIRONMENT_URL"
 fi
