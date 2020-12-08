@@ -179,6 +179,10 @@ else
     NGINX_CONF=$(cat nossl.conf.nginx)
 fi
 
+ls -al
+
+echo $NGINX_CONF
+
 # install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
