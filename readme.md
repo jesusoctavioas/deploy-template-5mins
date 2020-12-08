@@ -208,11 +208,12 @@ Below is the list of all variables this project uses. Some of them are required,
 | AWS_DEFAULT_REGION | Your AWS region  | Yes | `us-west-2` |
 | WEBAPP_PORT | Your application port according to the Dockerfile   |  | `5000` |
 | TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  |  | `t2.micro` |
-| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  |  | `t2.micro` |
+| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  |  | `db.t2.micro` |
 | TF_VAR_POSTGRES_ALLOCATED_STORAGE | Database storage size  |  | `20gb` |
 | S3_BUCKET | S3 environment specific bucket name. |  | We generate it for you. |
 | S3_BUCKET_DOMAIN | S3 publicly accessible domain. |  | We generate it for you. |
 | S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. |  | We generate it for you. |
+| DATABASE_URL | Generated postgresql credentials  |  | We generate it for you. |
 | CERT_DOMAIN | HTTPS Domain name for your app.  |  | `example.com` |
 | CERT_EMAIL | HTTPS Your email to generate ssl certificate.  |  | `dz@example.com` |
 | DB_INITIALIZE | This command will be executed once after deployment.  |  | `bin/rake db:setup RAILS_ENV=production` |
