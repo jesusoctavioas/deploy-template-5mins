@@ -45,6 +45,8 @@ http {
 
         location / {
             proxy_pass          http://docker_upstream;
+
+            proxy_set_header Host \$host;
         }
     }
 }
