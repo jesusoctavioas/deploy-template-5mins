@@ -16,6 +16,7 @@ infrastructure in under five minutes.
 - [Configure Infra Resources](#configure-infra-resources)
 - [List of All Configuration Variables](#list-of-all-configuration-variables)
 - [Enabling SSL](#enabling-ssl)
+- [Variables](#variables)
 - [Examples](#examples)
 
 ### Assumption
@@ -194,6 +195,29 @@ The pipeline includes `destroy` job that will remove all infrastructure created 
 - Execute the `setup_instructions` job in the pipeline. View the job logs for instruction on how to configure DNS records for your domain.
 - Add DNS records are described in `setup_instructions`. This is usually done with your domain registrar, or any other service that you use to manage network settings for your domains.
 - Execute the `ssl_certificate` job.
+
+
+### Variables
+
+Below is the list of all variables this project uses. Some of them are required, the rest is optional and exist to provide additional functionality or flexibility.
+
+| Variable      | Description | Required | Example value | 
+| ----------- | ----------- | ----------- | ----------- |
+| AWS_ACCESS_KEY_ID | Your AWS security credentials  | Yes | `AKIAIOSFODNN7EXAMPLE` |
+| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  | Yes |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| AWS_DEFAULT_REGION | Your AWS region  | Yes | `us-west-2` |
+| WEBAPP_PORT | Your application port according to the Dockerfile   |  | `5000` |
+| TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  |  | `t2.micro` |
+| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  |  | `t2.micro` |
+| TF_VAR_POSTGRES_ALLOCATED_STORAGE | Database storage size  |  | `20gb` |
+| S3_BUCKET | S3 environment specific bucket name. |  | We generate it for you. |
+| S3_BUCKET_DOMAIN | S3 publicly accessible domain. |  | We generate it for you. |
+| S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. |  | We generate it for you. |
+| CERT_DOMAIN | HTTPS Domain name for your app.  |  | `example.com` |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  |  | `dz@example.com` |
+| DB_INITIALIZE | This command will be executed once after deployment.  |  | `bin/rake db:setup RAILS_ENV=production` |
+| DB_MIGRATE | This command will be executed after each deployment.  |  | `bin/rake db:migrate RAILS_ENV=production` |
+
 
 ### Examples
 
