@@ -9,5 +9,8 @@ COPY setup_instructions.sh .
 COPY ssl_certificate.sh .
 
 COPY conf.nginx .
+COPY nossl.conf.nginx .
 
 RUN chmod a+x deploy.sh
+RUN chmod a+x  setup_instructions.sh .
+RUN chmod a+x  ssl_certificate.sh .

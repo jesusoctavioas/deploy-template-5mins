@@ -11,14 +11,11 @@ jq --raw-output ".public_ip.value" tf_output.json >public_ip.txt
 jq --raw-output ".private_key.value.private_key_pem" tf_output.json >private_key.pem
 chmod 0600 private_key.pem
 
-# install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
 # stop nginx if running
 NGINX_CONF=$(cat conf.nginx)
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
-    sudo apt install nginx -y
-    sudo nginx -v
     rm -f conf.nginx
     echo \"$NGINX_CONF\" >conf.nginx
 "

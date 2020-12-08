@@ -74,6 +74,7 @@ deploy:
     before_script:
         - cp /*.tf .
         - cp /deploy.sh .
+        - cp /nossl.conf.nginx .
     script:
         - ./deploy.sh
     artifacts:
@@ -81,7 +82,7 @@ deploy:
             dotenv: deploy.env
     environment:
         name: $CI_COMMIT_REF_SLUG
-        url: http://$DYNAMIC_ENVIRONMENT_URL:8000
+        url: http://$DYNAMIC_ENVIRONMENT_URL
         on_stop: terraform_destroy
 
 setup_instructions:
