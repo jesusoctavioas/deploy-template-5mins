@@ -83,7 +83,7 @@ deploy:
             dotenv: deploy.env
     environment:
         name: $CI_COMMIT_REF_SLUG
-        url: http://$DYNAMIC_ENVIRONMENT_URL
+        url: $DYNAMIC_ENVIRONMENT_URL
         on_stop: terraform_destroy
 
 setup_instructions:

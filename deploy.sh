@@ -12,10 +12,6 @@ jq --raw-output ".s3_bucket_domain.value" tf_output.json >s3_bucket_domain.txt
 jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json >s3_bucket_regional_domain.txt
 chmod 0600 private_key.pem
 
-# set dynamic url
-DYNAMIC_ENVIRONMENT_URL=$(cat public_ip.txt)
-echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
-
 # variables
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 DATABASE_URL=$(cat database_url.txt)
@@ -175,14 +171,15 @@ fi
 if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
     echo "with ssl"
     NGINX_CONF=$(cat conf.nginx)
+    DYNAMIC_ENVIRONMENT_URL=https://$(cat public_ip.txt)
 else
     echo "no ssl"
     NGINX_CONF=$(cat nossl.conf.nginx)
+    DYNAMIC_ENVIRONMENT_URL=http://$(cat public_ip.txt)
 fi
 
-ls -al
-
-echo $NGINX_CONF
+# set dynamic url
+echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
 
 # install nginx
 # delete existing nginx conf (if exists)
