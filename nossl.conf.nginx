@@ -32,7 +32,7 @@ http {
 
         location / {
             proxy_pass      http://docker_upstream;
-            proxy_set_header Host $http_host;
+            proxy_set_header Host \$http_host;
         }
     }
 
