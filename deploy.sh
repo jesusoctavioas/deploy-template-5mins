@@ -86,9 +86,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
     sudo docker pull $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     sudo docker run --name container_webapp                                 \
-        -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                                   \
-        -e AWS_SECRET_KEY=$AWS_SECRET_KEY                                   \
-        -e AWS_REGION=$AWS_REGION                                           \
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                             \
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY                     \
+        -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                           \
         -e DATABASE_URL=$DATABASE_URL                                       \
         -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                             \
         -e DATABASE_USERNAME=$DATABASE_USERNAME                             \
@@ -96,8 +96,8 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e DATABASE_NAME=$DATABASE_NAME                                     \
         -e S3_BUCKET=$S3_BUCKET                                             \
         -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                               \
-        $GL_VARs                                                            \
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
+        $GL_VARs                                                            \
         -d                                                                  \
         -p 8000:$WEBAPP_PORT                                                \
         $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
@@ -117,9 +117,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             echo \"DB_INITIALIZE previously executed and successful\"
         else
             sudo docker exec                                                \
-                -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                           \
-                -e AWS_SECRET_KEY=$AWS_SECRET_KEY                           \
-                -e AWS_REGION=$AWS_REGION                                   \
+                -e $AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                    \
+                -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY             \
+                -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                   \
                 -e DATABASE_URL=$DATABASE_URL                               \
                 -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                     \
                 -e DATABASE_USERNAME=$DATABASE_USERNAME                     \
@@ -145,9 +145,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         echo \"DB_MIGRATE is not set\"
     else
         sudo docker exec                                                    \
-            -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                               \
-            -e AWS_SECRET_KEY=$AWS_SECRET_KEY                               \
-            -e AWS_REGION=$AWS_REGION                                       \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                         \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY                 \
+            -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                       \
             -e DATABASE_URL=$DATABASE_URL                                   \
             -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                         \
             -e DATABASE_USERNAME=$DATABASE_USERNAME                         \

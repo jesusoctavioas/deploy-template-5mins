@@ -45,9 +45,9 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
     - Variables to declare:
-        - `AWS_ACCESS_KEY`
-        - `AWS_SECRET_KEY`
-        - `AWS_REGION`
+        - `AWS_ACCESS_KEY_ID`
+        - `AWS_SECRET_ACCESS_KEY`
+        - `AWS_DEFAULT_REGION`
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
@@ -144,9 +144,9 @@ The following variables are provided to your containerized webapp. Thus are avai
 - DATABASE_PASSWORD             # {db_pass}
 - DATABASE_NAME                 # {db_name}
 
-- AWS_ACCESS_KEY                # Your AWS access key
-- AWS_SECRET_KEY                # Your AWS access key
-- AWS_REGION                    # Your AWS region
+- AWS_ACCESS_KEY_ID             # Your AWS access key
+- AWS_SECRET_ACCESS_KEY         # Your AWS access key
+- AWS_DEFAULT_REGION            # Your AWS region
 
 - S3_BUCKET                     # Environment specific S3 bucket name
 - S3_BUCKET_DOMAIN              # Publicly accessible domain

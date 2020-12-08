@@ -13,9 +13,9 @@ stages:
     - destroy
 
 variables:
-    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
-    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_KEY}
-    AWS_DEFAULT_REGION: ${AWS_REGION}
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
     TF_VAR_ENVIRONMENT_NAME: ${CI_PROJECT_PATH_SLUG}_${CI_PROJECT_ID}_${CI_COMMIT_REF_SLUG}
     TF_VAR_SHORT_ENVIRONMENT_NAME: ${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}
     TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_COMMIT_REF_SLUG}
@@ -26,13 +26,13 @@ cache:
 
 .needs_aws_vars:
     rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION'
             when: on_success
         -   when: never
 
 .needs_aws_domain_protected_branch:
     rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION && $CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
             when: manual
 
 terraform_plan:
@@ -126,6 +126,6 @@ terraform_destroy:
         name: $CI_COMMIT_REF_SLUG
         action: stop
     rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION && $CI_COMMIT_REF_PROTECTED == "false"'
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $CI_COMMIT_REF_PROTECTED == "false"'
             when: manual
         -   when: never
