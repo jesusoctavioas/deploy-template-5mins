@@ -1,3 +1,8 @@
+2.0.0
+- Change AWS variable names to match Terraform defauls
+- Add SSL support
+- Nginx proxy
+
 1.0.0
 - Create infrastructure: EC2, RDS (Postgres), S3
 - Deploy and run app as docker container inside the EC2 instance

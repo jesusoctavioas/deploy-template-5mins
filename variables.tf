@@ -1,9 +1,3 @@
-variable "AWS_ACCESS_KEY" {}
-
-variable "AWS_SECRET_KEY" {}
-
-variable "AWS_REGION" {}
-
 variable "ENVIRONMENT_NAME" {}
 
 variable "SHORT_ENVIRONMENT_NAME" {}

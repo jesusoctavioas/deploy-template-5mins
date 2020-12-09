@@ -6,15 +6,12 @@ include:
 
 stages:
     - build
-    - test
     - provision
     - deploy
+    - domain
     - destroy
 
 variables:
-    TF_VAR_AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-    TF_VAR_AWS_SECRET_KEY: ${AWS_SECRET_KEY}
-    TF_VAR_AWS_REGION: ${AWS_REGION}
     TF_VAR_ENVIRONMENT_NAME: ${CI_PROJECT_PATH_SLUG}_${CI_PROJECT_ID}_${CI_COMMIT_REF_SLUG}
     TF_VAR_SHORT_ENVIRONMENT_NAME: ${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}
     TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_COMMIT_REF_SLUG}
@@ -25,27 +22,14 @@ cache:
 
 .needs_aws_vars:
     rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION'
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION'
             when: on_success
         -   when: never
 
-terraform_plan:
-    stage: test
-    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/stable
-    extends: .needs_aws_vars
-    resource_group: terraform
-    before_script:
-        - cp /*.tf .
-        - cp /deploy.sh .
-    script:
-        - gitlab-terraform init
-        - gitlab-terraform plan
-        - gitlab-terraform plan-json
-    artifacts:
-        paths:
-            - plan.cache
-        reports:
-            terraform: plan.json
+.needs_aws_ssl_and_protected_branch:
+    rules:
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $CERT_DOMAIN && $CERT_EMAIL && $CI_COMMIT_REF_PROTECTED == "true"'
+            when: manual
 
 terraform_apply:
     stage: provision
@@ -56,12 +40,10 @@ terraform_apply:
         - cp /*.tf .
         - cp /deploy.sh .
     script:
+        - gitlab-terraform init
+        - gitlab-terraform plan
+        - gitlab-terraform plan-json
         - gitlab-terraform apply
-    artifacts:
-        paths:
-            - plan.cache
-        reports:
-            terraform: plan.json
 
 deploy:
     stage: deploy
@@ -71,6 +53,8 @@ deploy:
     before_script:
         - cp /*.tf .
         - cp /deploy.sh .
+        - cp /conf.nginx .
+        - cp /nossl.conf.nginx .
     script:
         - ./deploy.sh
     artifacts:
@@ -78,14 +62,39 @@ deploy:
             dotenv: deploy.env
     environment:
         name: $CI_COMMIT_REF_SLUG
-        url: http://$DYNAMIC_ENVIRONMENT_URL
+        url: $DYNAMIC_ENVIRONMENT_URL
+        on_stop: terraform_destroy
+
+setup_instructions:
+    stage: domain
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/stable
+    extends: .needs_aws_ssl_and_protected_branch
+    before_script:
+        - cp /*.tf .
+        - cp /setup_instructions.sh .
+    script:
+        - ./setup_instructions.sh
+
+ssl_certificate:
+    stage: domain
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/stable
+    extends: .needs_aws_ssl_and_protected_branch
+    before_script:
+        - cp /*.tf .
+        - cp /conf.nginx .
+        - cp /ssl_certificate.sh .
+    script:
+        - ./ssl_certificate.sh
+    environment:
+        name: $CI_COMMIT_REF_SLUG
+        url: https://$CERT_DOMAIN
         on_stop: terraform_destroy
 
 terraform_destroy:
     variables:
         GIT_STRATEGY: none
     stage: destroy
-    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
+    image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/stable
     before_script:
         - cp /*.tf .
         - cp /deploy.sh .
@@ -95,6 +104,6 @@ terraform_destroy:
         name: $CI_COMMIT_REF_SLUG
         action: stop
     rules:
-        -   if: '$AWS_ACCESS_KEY && $AWS_SECRET_KEY && $AWS_REGION && $CI_COMMIT_REF_PROTECTED == "false"'
+        -   if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $CI_COMMIT_REF_PROTECTED == "false"'
             when: manual
         -   when: never

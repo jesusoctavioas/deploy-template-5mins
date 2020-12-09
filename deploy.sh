@@ -12,10 +12,6 @@ jq --raw-output ".s3_bucket_domain.value" tf_output.json >s3_bucket_domain.txt
 jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json >s3_bucket_regional_domain.txt
 chmod 0600 private_key.pem
 
-# set dynamic url
-DYNAMIC_ENVIRONMENT_URL=$(cat public_ip.txt)
-echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
-
 # variables
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 DATABASE_URL=$(cat database_url.txt)
@@ -36,7 +32,6 @@ cp gl_vars_no_trailing_newline.txt gl_vars.txt                              # pr
 GL_VARs="$(cat gl_vars.txt)"                                                # define GL_VARs
 GL_VARs=${GL_VARs:-HELLO=\"WORLD}                                           # handle empty state
 GL_VARs=" -e $GL_VARs\""                                                    # wrap between -e and "
-echo "$GL_VARs"
 
 # Set Image name. Should be in sync with AutoDevOps build stage naming.
 # Taken from https://gitlab.com/gitlab-org/gitlab/-/raw/22f5722e3f39f56b5235b5893d081f022d00fa4c/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
@@ -48,33 +43,47 @@ else
     export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
 fi
 
-# execute on EC2 instance
+# update package repos
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo apt update
+"
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # install and start docker
 # log in to gitlab container registry
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
-    sudo amazon-linux-extras install docker
-    sudo service docker start
-
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo snap install docker
     sudo docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
- "
+"
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 # stop and remove all existing containers
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" '
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 # pull latest container image
 # run container
 # DB_INITIALIZE
 # DB_MIGRATE
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
     sudo docker pull $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     sudo docker run --name container_webapp                                 \
-        -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                                   \
-        -e AWS_SECRET_KEY=$AWS_SECRET_KEY                                   \
-        -e AWS_REGION=$AWS_REGION                                           \
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                             \
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY                     \
+        -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                           \
         -e DATABASE_URL=$DATABASE_URL                                       \
         -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                             \
         -e DATABASE_USERNAME=$DATABASE_USERNAME                             \
@@ -82,11 +91,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e DATABASE_NAME=$DATABASE_NAME                                     \
         -e S3_BUCKET=$S3_BUCKET                                             \
         -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                               \
-        $GL_VARs                                                            \
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
+        $GL_VARs                                                            \
         -d                                                                  \
-        -p 80:$WEBAPP_PORT                                                  \
-        -p 443:$WEBAPP_PORT                                                 \
+        -p 8000:$WEBAPP_PORT                                                \
         $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     echo \"DB_INITIALIZE_REPEAT: $DB_INITIALIZE_REPEAT\"
@@ -104,9 +112,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             echo \"DB_INITIALIZE previously executed and successful\"
         else
             sudo docker exec                                                \
-                -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                           \
-                -e AWS_SECRET_KEY=$AWS_SECRET_KEY                           \
-                -e AWS_REGION=$AWS_REGION                                   \
+                -e $AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                    \
+                -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY             \
+                -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                   \
                 -e DATABASE_URL=$DATABASE_URL                               \
                 -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                     \
                 -e DATABASE_USERNAME=$DATABASE_USERNAME                     \
@@ -132,9 +140,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         echo \"DB_MIGRATE is not set\"
     else
         sudo docker exec                                                    \
-            -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY                               \
-            -e AWS_SECRET_KEY=$AWS_SECRET_KEY                               \
-            -e AWS_REGION=$AWS_REGION                                       \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID                         \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY                 \
+            -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                       \
             -e DATABASE_URL=$DATABASE_URL                                   \
             -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                         \
             -e DATABASE_USERNAME=$DATABASE_USERNAME                         \
@@ -154,3 +162,58 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         fi
     fi
 "
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
+    echo "with ssl"
+    NGINX_CONF=$(cat conf.nginx)
+    DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
+else
+    echo "no ssl"
+    NGINX_CONF=$(cat nossl.conf.nginx)
+    DYNAMIC_ENVIRONMENT_URL=http://$(cat public_ip.txt)
+fi
+
+# set dynamic url
+echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
+
+# install nginx
+# delete existing nginx conf (if exists)
+# write nginx config
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo apt install nginx -y
+    sudo nginx -v
+    rm -f conf.nginx
+    echo \"$NGINX_CONF\" >conf.nginx
+"
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+# kill running nginx process (if exists)
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo nginx -s stop && echo 'nginx: stopped'
+"
+
+if [ $? -ne 0 ]; then
+    echo "nginx could not be stopped, but that's okay"
+fi
+
+# test nginx config
+# start nginx process
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
+    sudo nginx -t -c ~/conf.nginx
+    sudo nginx -c ~/conf.nginx && echo "nginx: started"
+'
+
+if [ $? -ne 0 ]; then
+    echo "Failed to start Nginx."
+    echo "If you have SSL enabled and deploying for the first time, please follow subsequent steps."
+    echo "Verify that your webapp can be accessed at http://$(cat public_ip.txt):8000 or http://$(cat public_ip.txt):80"
+else
+    echo "Nginx running and webapp being served at $DYNAMIC_ENVIRONMENT_URL"
+fi

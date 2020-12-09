@@ -6,7 +6,6 @@ infrastructure in under five minutes.
 - [Assumption](#assumption)
 - [Infrastructure](#infrastructure)
 - [Usage](#usage)
-- [Pipeline](#pipeline)
 - [Environments](#environments)
 - [Using the Postgres Database](#using-the-postgres-database)
 - [Using the S3 Bucket](#using-the-s3-bucket)
@@ -14,7 +13,10 @@ infrastructure in under five minutes.
 - [Variables Provided to Webapp](#variables-exposed-to-webapp)
 - [Rollback Deployments](#rollback-deployments)
 - [Customizing the Port](#customizing-the-port)
+- [Configure Infra Resources](#configure-infra-resources)
 - [List of All Configuration Variables](#list-of-all-configuration-variables)
+- [Enabling SSL](#enabling-ssl)
+- [Variables](#variables)
 - [Examples](#examples)
 
 ### Assumption
@@ -43,9 +45,9 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
     - Variables to declare:
-        - `AWS_ACCESS_KEY`
-        - `AWS_SECRET_KEY`
-        - `AWS_REGION`
+        - `AWS_ACCESS_KEY_ID`
+        - `AWS_SECRET_ACCESS_KEY`
+        - `AWS_DEFAULT_REGION`
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
@@ -54,28 +56,6 @@ include:
 ```
 
 3. Finally, `commit` changes, `push` to GitLab
-
-### Pipeline
-
-The `include::remote` directive above includes a pipeline into your project. This pipeline is
-responsible for provisioning infrastructure, configuring and deploying your containerized webapp.
-
-Stages and jobs of the pipeline are explained below (in a simplified manner):
-
-- Stage 1: `Build`
-    - Job `Docker Build` builds the Dockerfile and pushes the image to the project specific
-      container registry
-    - Job `AWS Provision` provisions the infra defined in `main.tf`
-- Stage 2: `Deploy`
-    - Job `Deploy App`
-        - SSHs into EC2 instance
-        - Logs into your project's container registry
-        - Pulls and runs the latest container image for that environment
-        - If configured, executes `DB_INITIALIZE` and `DB_MIGRATE`
-- Stage 3: `Destroy`
-    - Job `Destroy` can be manually triggered to destroy all provisioned infrastructure
-        - When Merge Request is merged, `Destroy` is automatically triggered to tear down the review
-          environment.
 
 ### Environments
 
@@ -116,7 +96,7 @@ made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCK
 
 You will need to use your AWS credentials in addition to the S3 Bucket name for uploading content.
 
-#### Providing Custom Environment Variables to Webapp
+### Providing Custom Environment Variables to Webapp
 
 Your application might need custom environment variables. These can be passed by declaring them with
 the `GL_VAR_` prefix. For example, if you wanted to pass `HELLO=WORLD`, you will need to
@@ -142,9 +122,9 @@ The following variables are provided to your containerized webapp. Thus are avai
 - DATABASE_PASSWORD             # {db_pass}
 - DATABASE_NAME                 # {db_name}
 
-- AWS_ACCESS_KEY                # Your AWS access key
-- AWS_SECRET_KEY                # Your AWS access key
-- AWS_REGION                    # Your AWS region
+- AWS_ACCESS_KEY_ID             # Your AWS access key
+- AWS_SECRET_ACCESS_KEY         # Your AWS access key
+- AWS_DEFAULT_REGION            # Your AWS region
 
 - S3_BUCKET                     # Environment specific S3 bucket name
 - S3_BUCKET_DOMAIN              # Publicly accessible domain
@@ -153,7 +133,7 @@ The following variables are provided to your containerized webapp. Thus are avai
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
 
-#### Rollback Deployments
+### Rollback Deployments
 
 - Clean way to rollback is to push a revert commit
 
@@ -162,14 +142,14 @@ The following variables are provided to your containerized webapp. Thus are avai
 By default, the containerized app's port 5000 is exposed. This can be modified by explicitly
 defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
 
-#### Configure Infra Resources
+### Configure Infra Resources
 
 You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
 and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
 
 Default values are shown in the [configuration example](#list-of-all-configuration-variables).
 
-#### List of All Configuration Variables
+### List of All Configuration Variables
 
 The following variables can be defined in your `.gitlab-ci.yml` file or be made available to the
 pipeline through any other mechanism. These variables are meant to configure the infrastructure or
@@ -194,15 +174,55 @@ variables:
     TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
     TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
     TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
+    
+    # ssl certificates
+    CERT_DOMAIN: 'my-domain.com'
+    CERT_EMAIL: 'admin@my-domain.com'
 
     # pass custom variables to webapp
     GL_VAR_HELLO: World
     GL_VAR_FOO: Bar
 ```
 
-#### Cleanup
+### Cleanup
 
 The pipeline includes `destroy` job that will remove all infrastructure created by `terraform_apply`. To prevent accidental removal of production data, we disabled `destroy` job on protected branches. However you can always start pipeline with `CI_COMMIT_REF_PROTECTED` variable set to `false`. This will add `destroy` job to pipeline (you still need to manually trigger it) so you can remove infrastructure even on protected branch.
+
+### Enabling SSL
+
+- Provide two variables `CERT_DOMAIN` and `CERT_EMAIL` to your pipeline. Typically, done by adding vars to `.gitlab-ci.yl`.
+- SSL Certificate jobs are only enabled on protected branches. By default `master` branch is protected. 
+- Execute the `setup_instructions` job in the pipeline. View the job logs for instruction on how to configure DNS records for your domain.
+- Add DNS records are described in `setup_instructions`. This is usually done with your domain registrar, or any other service that you use to manage network settings for your domains.
+- Execute the `ssl_certificate` job.
+
+
+### Variables
+
+Below is the list of all variables this project uses. Some of them are required, the rest is optional and exist to provide additional functionality or flexibility.
+
+| Variable      | Description | Required | Example value |  Pipeline variable | Webapp variable |
+| ------------- | ----------- | -------- | ------------- | ------------------ | --------------- |
+| AWS_ACCESS_KEY_ID | Your AWS security credentials  | Yes | `AKIAIOSFODNN7EXAMPLE` | Yes | Yes |
+| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  | Yes |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` | Yes | Yes |
+| AWS_DEFAULT_REGION | Your AWS region  | Yes | `us-west-2` | Yes | Yes |
+| WEBAPP_PORT | Your application port according to the Dockerfile   |  | `5000` | Yes | |
+| TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  |  | `t2.micro` | Yes | |
+| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  |  | `db.t2.micro` | Yes | |
+| TF_VAR_POSTGRES_ALLOCATED_STORAGE | Database storage size  |  | `20gb` | Yes | |
+| S3_BUCKET | S3 environment specific bucket name. |  | We generate it for you. | | Yes |
+| S3_BUCKET_DOMAIN | S3 publicly accessible domain. |  | We generate it for you. | | Yes |
+| S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. |  | We generate it for you. | | Yes |
+| DATABASE_URL | Generated postgresql credentials  |  | We generate it for you. | | Yes |
+| DATABASE_ENDPOINT | Generated postgresql host and port  |  | We generate it for you. | | Yes |
+| DATABASE_USERNAME | Generated postgresql username  |  | We generate it for you. | | Yes |
+| DATABASE_PASSWORD | Generated postgresql password  |  | We generate it for you. | | Yes |
+| DATABASE_NAME | Generated postgresql db name  |  | We generate it for you. | | Yes |
+| CERT_DOMAIN | HTTPS Domain name for your app.  |  | `example.com` | | Yes |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  |  | `dz@example.com` | Yes | |
+| DB_INITIALIZE | This command will be executed once after deployment.  |  | `bin/rake db:setup RAILS_ENV=production` | Yes | |
+| DB_MIGRATE | This command will be executed after each deployment.  |  | `bin/rake db:migrate RAILS_ENV=production` | Yes | |
+
 
 ### Examples
 
