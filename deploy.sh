@@ -64,7 +64,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # stop and remove all existing containers
+# delete all images
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
+    sudo docker rmi -f $(docker images -a -q)
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
