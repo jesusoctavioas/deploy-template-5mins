@@ -168,7 +168,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # determine domain
-CERT_DOMAIN=${CERT_DOMAIN:-https://$CI_COMMIT_REF_SLUG.$(cat public_ip.txt).xip.io}
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$(cat public_ip.txt).xip.io}
 NGINX_CONF=$(cat conf.nginx)
 DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 
