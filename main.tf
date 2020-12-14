@@ -154,9 +154,9 @@ resource "aws_security_group_rule" "allow_db_access" {
 
 resource "aws_db_instance" "postgres" {
     apply_immediately = true
-    allocated_storage = var.POSTGRES_ALLOCATED_STORAGE
+    allocated_storage = var.PG_ALLOCATED_STORAGE
     engine = "postgres"
-    instance_class = var.POSTGRES_INSTANCE_CLASS
+    instance_class = var.PG_INSTANCE_CLASS
     name = "db_${random_string.postgres_db.result}"
     username = "user_${random_string.postgres_username.result}"
     password = random_password.postgres_password.result

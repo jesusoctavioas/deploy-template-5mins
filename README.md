@@ -147,8 +147,8 @@ defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
 
 ### Configure Infra Resources
 
-You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
-and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
+You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_PG_INSTANCE_CLASS`
+and `TF_VAR_PG_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
 
 Default values are shown in the [configuration example](#list-of-all-configuration-variables).
 
@@ -175,8 +175,8 @@ variables:
 
     # configure infra specifications
     TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
-    TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
-    TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
+    TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
+    TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
 
     # ssl certificates
     CERT_DOMAIN: 'my-domain.com'
@@ -226,8 +226,8 @@ optional and exist to provide additional functionality or flexibility.
 | S3_BUCKET_DOMAIN | S3 publicly accessible domain. | We generate it for you. |  | | Yes |
 | S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. | We generate it for you. |  | | Yes |
 | TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  | `t2.micro` |  | Yes | |
-| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
-| TF_VAR_POSTGRES_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
+| TF_VAR_PG_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
+| TF_VAR_PG_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
 | WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
 
 ### Examples

@@ -2,12 +2,12 @@ variable "ENVIRONMENT_NAME" {}
 
 variable "SHORT_ENVIRONMENT_NAME" {}
 
-variable "POSTGRES_ALLOCATED_STORAGE" {
+variable "PG_ALLOCATED_STORAGE" {
     default = 20
     type = number
 }
 
-variable "POSTGRES_INSTANCE_CLASS" {
+variable "PG_INSTANCE_CLASS" {
     default = "db.t2.micro"
     type = string
 }
