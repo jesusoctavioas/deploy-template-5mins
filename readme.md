@@ -226,7 +226,7 @@ optional and exist to provide additional functionality or flexibility.
 | DATABASE_PASSWORD | Generated postgresql password  |  | We generate it for you. | | Yes |
 | DATABASE_NAME | Generated postgresql db name  |  | We generate it for you. | | Yes |
 | CERT_DOMAIN | HTTPS Domain name for your app.  |  | `example.com` | | Yes |
-| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  |  | `dz@example.com` | Yes | |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | Yes | `dz@example.com` | Yes | |
 | DB_INITIALIZE | This command will be executed once after deployment.  |  | `bin/rake db:setup RAILS_ENV=production` | Yes | |
 | DB_MIGRATE | This command will be executed after each deployment.  |  | `bin/rake db:migrate RAILS_ENV=production` | Yes | |
 
