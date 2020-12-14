@@ -1,3 +1,6 @@
+2.1.0
+- Remove terraform_plan CI job and use of artifacts for terraform files
+
 2.0.0
 - Change AWS variable names to match Terraform defauls
 - Add SSL support

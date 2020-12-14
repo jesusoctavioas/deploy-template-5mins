@@ -64,7 +64,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # stop and remove all existing containers
+# delete all images
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
+    sudo docker rmi -f $(docker images -a -q)
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
@@ -167,17 +169,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if [ "$CERT_DOMAIN" != "" ] && [ "$CERT_EMAIL" != "" ] && [ "$CI_COMMIT_REF_PROTECTED" == "true" ]; then
-    echo "with ssl"
-    NGINX_CONF=$(cat conf.nginx)
-    DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
-else
-    echo "no ssl"
-    NGINX_CONF=$(cat nossl.conf.nginx)
-    DYNAMIC_ENVIRONMENT_URL=http://$(cat public_ip.txt)
-fi
+# determine domain
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$(cat public_ip.txt).nip.io}
+NGINX_CONF=$(cat conf.nginx)
+DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 
-# set dynamic url
+# report dynamic_url
 echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
 
 # install nginx
@@ -203,6 +200,27 @@ if [ $? -ne 0 ]; then
     echo "nginx could not be stopped, but that's okay"
 fi
 
+# update package repos
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+    sudo snap refresh
+    sudo snap install --classic certbot
+
+    sudo certbot certonly                               \
+        --non-interactive                               \
+        --standalone                                    \
+        --agree-tos                                     \
+        --email $CERT_EMAIL                             \
+        --domains $CERT_DOMAIN                          \
+        --cert-name webapp_cert
+
+    sudo chown ubuntu /etc/letsencrypt/live/webapp_cert/fullchain.pem
+    sudo chown ubuntu /etc/letsencrypt/live/webapp_cert/privkey.pem
+"
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # test nginx config
 # start nginx process
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
@@ -211,9 +229,5 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 '
 
 if [ $? -ne 0 ]; then
-    echo "Failed to start Nginx."
-    echo "If you have SSL enabled and deploying for the first time, please follow subsequent steps."
-    echo "Verify that your webapp can be accessed at http://$(cat public_ip.txt):8000 or http://$(cat public_ip.txt):80"
-else
-    echo "Nginx running and webapp being served at $DYNAMIC_ENVIRONMENT_URL"
+    exit 1
 fi
