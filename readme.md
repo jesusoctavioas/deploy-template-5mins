@@ -213,6 +213,8 @@ optional and exist to provide additional functionality or flexibility.
 | AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Yes | Yes | Yes |
 | AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` | Yes | Yes | Yes |
 | AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Yes | Yes | Yes |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Yes | Yes | |
+| CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
 | WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
 | TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  | `t2.micro` |  | Yes | |
 | TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
@@ -225,8 +227,6 @@ optional and exist to provide additional functionality or flexibility.
 | DATABASE_USERNAME | Generated postgresql username  | We generate it for you. |  | | Yes |
 | DATABASE_PASSWORD | Generated postgresql password  | We generate it for you. |  | | Yes |
 | DATABASE_NAME | Generated postgresql db name  | We generate it for you. |  | | Yes |
-| CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
-| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Yes | Yes | |
 | DB_INITIALIZE | This command will be executed once after deployment.  | `bin/rake db:setup RAILS_ENV=production` |  | Yes | |
 | DB_MIGRATE | This command will be executed after each deployment.  | `bin/rake db:migrate RAILS_ENV=production` |  | Yes | |
 
