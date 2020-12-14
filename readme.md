@@ -3,21 +3,21 @@
 Five Minute Docker allows Dockerized applications to be deployed on production grade AWS
 infrastructure in under five minutes.
 
-- [Assumption](#assumption)
-- [Infrastructure](#infrastructure)
-- [Usage](#usage)
-- [Environments](#environments)
-- [Using the Postgres Database](#using-the-postgres-database)
-- [Using the S3 Bucket](#using-the-s3-bucket)
-- [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
-- [Variables Provided to Webapp](#variables-exposed-to-webapp)
-- [Rollback Deployments](#rollback-deployments)
-- [Customizing the Port](#customizing-the-port)
-- [Configure Infra Resources](#configure-infra-resources)
-- [List of All Configuration Variables](#list-of-all-configuration-variables)
-- [Enabling SSL](#enabling-ssl)
-- [Variables](#variables)
-- [Examples](#examples)
+1. [Assumption](#assumption)
+1. [Infrastructure](#infrastructure)
+1. [Usage](#usage)
+1. [Environments](#environments)
+1. [Using the Postgres Database](#using-the-postgres-database)
+1. [Using the S3 Bucket](#using-the-s3-bucket)
+1. [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
+1. [Variables Provided to Webapp](#variables-exposed-to-webapp)
+1. [Rollback Deployments](#rollback-deployments)
+1. [Customizing the Port](#customizing-the-port)
+1. [Configure Infra Resources](#configure-infra-resources)
+1. [List of All Configuration Variables](#list-of-all-configuration-variables)
+1. [Enabling SSL](#enabling-ssl)
+1. [Variables](#variables)
+1. [Examples](#examples)
 
 ### Assumption
 
