@@ -15,18 +15,18 @@ fail-db-init:
     stage: test
     trigger:
         project: gitlab-org/5-minute-production-app/sandbox/test-five-min-prod
-        branch: fail-db-init
+        branch: stable-fail-db-init
     allow_failure: true
 
 fail-db-migrate:
     stage: test
     trigger:
         project: gitlab-org/5-minute-production-app/sandbox/test-five-min-prod
-        branch: fail-db-migrate
+        branch: stable-fail-db-migrate
     allow_failure: true
 
 success:
     stage: test
     trigger:
         project: gitlab-org/5-minute-production-app/sandbox/test-five-min-prod
-        branch: success
+        branch: stable-success
