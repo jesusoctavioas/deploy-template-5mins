@@ -43,6 +43,8 @@ http {
     ssl_certificate         /etc/letsencrypt/live/webapp_cert/fullchain.pem;
     ssl_certificate_key     /etc/letsencrypt/live/webapp_cert/privkey.pem;
 
+    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains' always;
+
     location / {
       proxy_pass          http://docker_upstream;
 
