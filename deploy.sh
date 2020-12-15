@@ -36,11 +36,11 @@ GL_VARs=" -e $GL_VARs\""                                                    # wr
 # Set Image name. Should be in sync with AutoDevOps build stage naming.
 # Taken from https://gitlab.com/gitlab-org/gitlab/-/raw/22f5722e3f39f56b5235b5893d081f022d00fa4c/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 if [[ -z "$CI_COMMIT_TAG" ]]; then
-    export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
-    export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
+  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
+  export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
 else
-    export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
-    export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
+  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
+  export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
 fi
 
 # update package repos
@@ -49,7 +49,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # install and start docker
@@ -60,7 +60,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # stop and remove all existing containers
@@ -72,7 +72,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 '
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # pull latest container image
@@ -166,7 +166,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # determine domain
@@ -188,7 +188,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # kill running nginx process (if exists)
@@ -197,7 +197,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    echo "nginx could not be stopped, but that's okay"
+  echo "nginx could not be stopped, but that's okay"
 fi
 
 # update package repos
@@ -218,7 +218,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # test nginx config
@@ -229,5 +229,5 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 '
 
 if [ $? -ne 0 ]; then
-    exit 1
+  exit 1
 fi
