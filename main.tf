@@ -53,7 +53,6 @@ data "aws_ami" "ubuntu_20_04" {
   owners = ["099720109477"]
 }
 
-
 resource "aws_security_group" "five_minute_public" {
   name = "five_minute_public_security_group_${var.ENVIRONMENT_NAME}"
   description = "Publicly accessible security group"
@@ -82,14 +81,6 @@ resource "aws_security_group" "five_minute_public" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    description = "HTTP"
-    from_port = 8000
-    to_port = 8000
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port = 0
     to_port = 0
@@ -108,6 +99,8 @@ resource "aws_instance" "webapp" {
 
   tags = local.common_tags
 }
+
+# ElasticIP
 
 resource "aws_eip" "public_ip" {
   instance = aws_instance.webapp.id
