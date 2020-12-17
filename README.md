@@ -1,7 +1,13 @@
 # Deploy Template for 5 Minute Production App
 
-Five Minute Docker allows Dockerized applications to be deployed on production grade AWS
-infrastructure in under five minutes.
+The 5 minute production app is about deployments being so easy that you need only 5 minutes to figure it out and make it happen.
+
+Learn more about the vision:
+
+- [Direction](https://about.gitlab.com/direction/5-min-production/)
+- [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
+
+This project is used for template development and roadmap management. The following sections explain the requirements and provide documentation to walk you through requirements, usage, customizations and more examples.
 
 1. [Assumption](#assumption)
 1. [Infrastructure](#infrastructure)
