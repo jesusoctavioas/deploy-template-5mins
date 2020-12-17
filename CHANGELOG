@@ -1,3 +1,7 @@
+2.2.0
+- HTTPS support by default
+- CERT_EMAIL variable is now required
+
 2.1.0
 - Remove terraform_plan CI job and use of artifacts for terraform files
 

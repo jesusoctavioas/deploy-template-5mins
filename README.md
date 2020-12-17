@@ -3,21 +3,21 @@
 Five Minute Docker allows Dockerized applications to be deployed on production grade AWS
 infrastructure in under five minutes.
 
-- [Assumption](#assumption)
-- [Infrastructure](#infrastructure)
-- [Usage](#usage)
-- [Environments](#environments)
-- [Using the Postgres Database](#using-the-postgres-database)
-- [Using the S3 Bucket](#using-the-s3-bucket)
-- [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
-- [Variables Provided to Webapp](#variables-exposed-to-webapp)
-- [Rollback Deployments](#rollback-deployments)
-- [Customizing the Port](#customizing-the-port)
-- [Configure Infra Resources](#configure-infra-resources)
-- [List of All Configuration Variables](#list-of-all-configuration-variables)
-- [Enabling SSL](#enabling-ssl)
-- [Variables](#variables)
-- [Examples](#examples)
+1. [Assumption](#assumption)
+1. [Infrastructure](#infrastructure)
+1. [Usage](#usage)
+1. [Environments](#environments)
+1. [Using the Postgres Database](#using-the-postgres-database)
+1. [Using the S3 Bucket](#using-the-s3-bucket)
+1. [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
+1. [Variables Provided to Webapp](#variables-exposed-to-webapp)
+1. [Rollback Deployments](#rollback-deployments)
+1. [Customizing the Port](#customizing-the-port)
+1. [Configure Infra Resources](#configure-infra-resources)
+1. [List of All Configuration Variables](#list-of-all-configuration-variables)
+1. [Enabling SSL](#enabling-ssl)
+1. [Variables](#variables)
+1. [Examples](#examples)
 
 ### Assumption
 
@@ -147,8 +147,8 @@ defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
 
 ### Configure Infra Resources
 
-You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_POSTGRES_INSTANCE_CLASS`
-and `TF_VAR_POSTGRES_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
+You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_PG_INSTANCE_CLASS`
+and `TF_VAR_PG_ALLOCATED_STORAGE` to explicitly define the specs of infra that is provisioned.
 
 Default values are shown in the [configuration example](#list-of-all-configuration-variables).
 
@@ -175,8 +175,8 @@ variables:
 
     # configure infra specifications
     TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
-    TF_VAR_POSTGRES_INSTANCE_CLASS: "db.t2.micro"  # free tier
-    TF_VAR_POSTGRES_ALLOCATED_STORAGE: 20          # 20gb
+    TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
+    TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
 
     # ssl certificates
     CERT_DOMAIN: 'my-domain.com'
@@ -210,25 +210,25 @@ optional and exist to provide additional functionality or flexibility.
 
 | Variable      | Description | Example value | Required |  Pipeline variable | Webapp variable |
 | ------------- | ----------- | -------- | ------------- | ------------------ | --------------- |
-| AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Yes | Yes | Yes |
-| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` | Yes | Yes | Yes |
-| AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Yes | Yes | Yes |
-| WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
-| TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  | `t2.micro` |  | Yes | |
-| TF_VAR_POSTGRES_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
-| TF_VAR_POSTGRES_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
-| S3_BUCKET | S3 environment specific bucket name. | We generate it for you. |  | | Yes |
-| S3_BUCKET_DOMAIN | S3 publicly accessible domain. | We generate it for you. |  | | Yes |
-| S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. | We generate it for you. |  | | Yes |
+| AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Required | Yes | Yes |
+| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` | Required | Yes | Yes |
+| AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Required | Yes | Yes |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Required | Yes | |
+| CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
 | DATABASE_URL | Generated postgresql credentials  | We generate it for you. |  | | Yes |
 | DATABASE_ENDPOINT | Generated postgresql host and port  | We generate it for you. |  | | Yes |
 | DATABASE_USERNAME | Generated postgresql username  | We generate it for you. |  | | Yes |
 | DATABASE_PASSWORD | Generated postgresql password  | We generate it for you. |  | | Yes |
 | DATABASE_NAME | Generated postgresql db name  | We generate it for you. |  | | Yes |
-| CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
-| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Yes | Yes | |
 | DB_INITIALIZE | This command will be executed once after deployment.  | `bin/rake db:setup RAILS_ENV=production` |  | Yes | |
 | DB_MIGRATE | This command will be executed after each deployment.  | `bin/rake db:migrate RAILS_ENV=production` |  | Yes | |
+| S3_BUCKET | S3 environment specific bucket name. | We generate it for you. |  | | Yes |
+| S3_BUCKET_DOMAIN | S3 publicly accessible domain. | We generate it for you. |  | | Yes |
+| S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. | We generate it for you. |  | | Yes |
+| TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  | `t2.micro` |  | Yes | |
+| TF_VAR_PG_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
+| TF_VAR_PG_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
+| WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
 
 ### Examples
 
