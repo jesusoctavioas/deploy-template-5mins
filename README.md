@@ -211,7 +211,7 @@ optional and exist to provide additional functionality or flexibility.
 | Variable      | Description | Example value | Required |  Pipeline variable | Webapp variable |
 | ------------- | ----------- | -------- | ------------- | ------------------ | --------------- |
 | AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Required | Yes | Yes |
-| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` | Required | Yes | Yes |
+| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI /K7MDENG /bPxRfiCYEXAMPLEKEY` | Required | Yes | Yes |
 | AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Required | Yes | Yes |
 | CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Required | Yes | |
 | CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
