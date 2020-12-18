@@ -1,7 +1,3 @@
-# service desk email
-SERVICE_DESK_EMAIL=incoming+$CI_PROJECT_PATH_SLUG-$CI_PROJECT_ID-issue-@incoming.gitlab.com
-echo "$SERVICE_DESK_EMAIL"
-
 # extract terraform state
 gitlab-terraform output -json >tf_output.json
 jq --raw-output ".public_ip.value" tf_output.json >public_ip.txt
@@ -14,9 +10,12 @@ jq --raw-output ".database_name.value" tf_output.json >database_name.txt
 jq --raw-output ".s3_bucket.value" tf_output.json >s3_bucket.txt
 jq --raw-output ".s3_bucket_domain.value" tf_output.json >s3_bucket_domain.txt
 jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json >s3_bucket_regional_domain.txt
+jq --raw-output ".smtp_user.value" tf_output.json >smtp_user.txt
+jq --raw-output ".smtp_password.value" tf_output.json >smtp_password.txt
 chmod 0600 private_key.pem
 
 # variables
+CERT_EMAIL=${CERT_EMAIL:-TF_VAR_SERVICE_DESK_EMAIL}
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 DATABASE_URL=$(cat database_url.txt)
 DATABASE_ENDPOINT=$(cat database_endpoint.txt)
@@ -26,6 +25,12 @@ DATABASE_NAME=$(cat database_name.txt)
 S3_BUCKET=$(cat s3_bucket.txt)
 S3_BUCKET_DOMAIN=$(cat s3_bucket_domain.txt)
 S3_BUCKET_REGIONAL_DOMAIN=$(cat s3_bucket_regional_domain.txt)
+SMTP_HOST="email-smtp.$AWS_DEFAULT_REGION.amazonaws.com"
+SMTP_FROM=${SMTP_FROM:-TF_VAR_SERVICE_DESK_EMAIL}
+SMTP_USER=$(cat smtp_user.txt)
+SMTP_PASSWORD=$(cat smtp_password.txt)
+
+# extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
 sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
 sed 's/=/="/gi' gl_vars_prefix_removed.txt >gl_vars_quoted_01.txt           # add left quote
@@ -98,6 +103,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e S3_BUCKET=$S3_BUCKET                                             \
         -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                               \
         -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN             \
+        -e SMTP_HOST=$SMTP_HOST                                             \
+        -e SMTP_FROM=$SMTP_FROM                                             \
+        -e SMTP_USER=$SMTP_USER                                             \
+        -e SMTP_PASSWORD=$SMTP_PASSWORD                                     \
         $GL_VARs                                                            \
         -d                                                                  \
         -p 8000:$WEBAPP_PORT                                                \
@@ -129,6 +138,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 -e S3_BUCKET=$S3_BUCKET                                     \
                 -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                       \
                 -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN     \
+                -e SMTP_HOST=$SMTP_HOST                                     \
+                -e SMTP_FROM=$SMTP_FROM                                     \
+                -e SMTP_USER=$SMTP_USER                                     \
+                -e SMTP_PASSWORD=$SMTP_PASSWORD                             \
                 $GL_VARs                                                    \
                 -i                                                          \
                 container_webapp $DB_INITIALIZE
@@ -157,6 +170,10 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             -e S3_BUCKET=$S3_BUCKET                                         \
             -e S3_BUCKET_DOMAIN=$S3_BUCKET_DOMAIN                           \
             -e S3_BUCKET_REGIONAL_DOMAIN=$S3_BUCKET_REGIONAL_DOMAIN         \
+            -e SMTP_HOST=$SMTP_HOST                                         \
+            -e SMTP_FROM=$SMTP_FROM                                         \
+            -e SMTP_USER=$SMTP_USER                                         \
+            -e SMTP_PASSWORD=$SMTP_PASSWORD                                 \
             $GL_VARs                                                        \
             -i                                                              \
             container_webapp $DB_MIGRATE

@@ -1,13 +1,16 @@
 # Deploy Template for 5 Minute Production App
 
-The 5 minute production app is about deployments being so easy that you need only 5 minutes to figure it out and make it happen.
+The 5 minute production app is about deployments being so easy that you need only 5 minutes to
+figure it out and make it happen.
 
 Learn more about the vision:
 
 - [Direction](https://about.gitlab.com/direction/5-min-production/)
 - [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
 
-This project is used for template development and roadmap management. The following sections explain the requirements and provide documentation to walk you through requirements, usage, customizations and more examples.
+This project is used for template development and roadmap management. The following sections explain
+the requirements and provide documentation to walk you through requirements, usage, customizations
+and more examples.
 
 1. [Assumption](#assumption)
 1. [Infrastructure](#infrastructure)
@@ -38,30 +41,27 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 - Elastic IP
 - EC2 instance
-    - Amazon Linux
-    - `t2.micro`
-    - Public IP
+  - Amazon Linux
+  - `t2.micro`
+  - Public IP
 - DB instance
-    - Postgres
-    - `db.t2.micro`
-    - 20gb allocated storage
+  - Postgres
+  - `db.t2.micro`
+  - 20gb allocated storage
 - S3 Bucket
 
 ### Usage
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
-    - Variables to declare:
-        - `AWS_ACCESS_KEY_ID`
-        - `AWS_SECRET_ACCESS_KEY`
-        - `AWS_DEFAULT_REGION`
+  - Variables to declare:
+    - `AWS_ACCESS_KEY_ID`
+    - `AWS_SECRET_ACCESS_KEY`
+    - `AWS_DEFAULT_REGION`
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
-variables:
-    CERT_EMAIL: 'user@example.com'
-
 include:
-    remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
+  remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
 ```
 
 3. Finally, `commit` changes, `push` to GitLab
@@ -69,34 +69,34 @@ include:
 ### Environments
 
 - Pipeline automatically creates `environments`
-    - `environment = infrastructure + data + configuration + deployed webapp`
+  - `environment = infrastructure + data + configuration + deployed webapp`
 - Multiple `environments` are supported
-    - `environments` are synced with git branches
-    - One environment per branch
+  - `environments` are synced with git branches
+  - One environment per branch
 - Environment name matches `$CI_COMMIT_REF_SLUG` i.e. branch name or tag name, lowercased and
   slugified, for example:
-    - `production` branch will create and deploy to `production` environment
-    - `staging` branch will create and deploy to `staging` environment, etc.
+  - `production` branch will create and deploy to `production` environment
+  - `staging` branch will create and deploy to `staging` environment, etc.
 
 ### Using the Postgres Database
 
 - `DATABASE_URL` is passed to the webapp container
-    - Format: `postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}`
+  - Format: `postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}`
 - Individual variables are also passed to the webapp container:
-    - `DATABASE_ENDPOINT`
-    - `DATABASE_USERNAME`
-    - `DATABASE_PASSWORD`
-    - `DATABASE_NAME`
+  - `DATABASE_ENDPOINT`
+  - `DATABASE_USERNAME`
+  - `DATABASE_PASSWORD`
+  - `DATABASE_NAME`
 - Environment variables `DB_INITIALIZE` and `DB_MIGRATE`, if set, are executed right
   after `docker run`
-    - These must contain commands that are executed after deployment
-    - These commands are executed within the Docker container
-    - `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be
-      executed again
-        - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
-        - `DB_INITIALIZE` can be force-executed if `DB_INITIALIZE_REPEAT` is set to `"True"`
-    - `DB_MIGRATE` is executed on every deployment
-    - Failing `DB_INITIALIZE` or `DB_MIGRATE` **will not** rollback your deployment
+  - These must contain commands that are executed after deployment
+  - These commands are executed within the Docker container
+  - `DB_INITIALIZE` is executed only once on first deploy, and if successful, will never be executed
+    again
+    - If the first execution of `DB_INITIALIZE` fails, it will be retried on next deployment
+    - `DB_INITIALIZE` can be force-executed if `DB_INITIALIZE_REPEAT` is set to `"True"`
+  - `DB_MIGRATE` is executed on every deployment
+  - Failing `DB_INITIALIZE` or `DB_MIGRATE` **will not** rollback your deployment
 
 ### Using the S3 Bucket
 
@@ -139,6 +139,11 @@ The following variables are provided to your containerized webapp. Thus are avai
 - S3_BUCKET_DOMAIN              # Publicly accessible domain
 - S3_BUCKET_REGIONAL_DOMAIN     # Publicly accessible regional domain
 
+- SMTP_HOST                     # AWS SES SMTP server, region specific
+- SMTP_FROM                     # AWS SES validated from email address
+- SMTP_USER                     # SMTP user
+- SMTP_PASSWORD                 # SMTP password
+
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
 
@@ -167,30 +172,33 @@ deployment process.
 ```yaml
 variables:
 
-    # executed successfully once after deployment
-    DB_INITIALIZE: "bundle exec rake db:setup RAILS_ENV=production"
+  # executed successfully once after deployment
+  DB_INITIALIZE: "bundle exec rake db:setup RAILS_ENV=production"
 
-    # force DB_INITIALIZE execution
-    DB_INITIALIZE_REPEAT: "True"
+  # force DB_INITIALIZE execution
+  DB_INITIALIZE_REPEAT: "True"
 
-    # executed after every deployment
-    DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
+  # executed after every deployment
+  DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
 
-    # configure container port bindings
-    WEBAPP_PORT: 3000
+  # configure container port bindings
+  WEBAPP_PORT: 3000
 
-    # configure infra specifications
-    TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
-    TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
-    TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
+  # configure infra specifications
+  TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
+  TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
+  TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
 
-    # ssl certificates
-    CERT_DOMAIN: 'my-domain.com'
-    CERT_EMAIL: 'admin@my-domain.com'
+  # ssl certificates
+  CERT_DOMAIN: 'my-domain.com'
+  CERT_EMAIL: 'admin@my-domain.com'
 
-    # pass custom variables to webapp
-    GL_VAR_HELLO: World
-    GL_VAR_FOO: Bar
+  # smtp
+  SMTP_FROM: 'notifications@my-company.com'
+
+  # pass custom variables to webapp
+  GL_VAR_HELLO: World
+  GL_VAR_FOO: Bar
 ```
 
 ### Cleanup
@@ -207,7 +215,6 @@ infrastructure even on protected branch.
 - By default, the URL structure is `https://{branch-or-tag}.{public-ip}.xip.io`
 - For custom domain, define `CERT_DOMAIN` variable for your pipeline
   - This can be defined in `.gitlab-ci.yml` alongwith `CERT_EMAIL`
-  
 
 ### Variables
 
@@ -219,15 +226,15 @@ optional and exist to provide additional functionality or flexibility.
 | AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Required | Yes | Yes |
 | AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI /K7MDENG /bPxRfiCYEXAMPLEKEY` | Required | Yes | Yes |
 | AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Required | Yes | Yes |
-| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | Required | Yes | |
+| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | | Yes | |
 | CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
 | DATABASE_URL | Generated postgresql credentials  | We generate it for you. |  | | Yes |
 | DATABASE_ENDPOINT | Generated postgresql host and port  | We generate it for you. |  | | Yes |
 | DATABASE_USERNAME | Generated postgresql username  | We generate it for you. |  | | Yes |
 | DATABASE_PASSWORD | Generated postgresql password  | We generate it for you. |  | | Yes |
 | DATABASE_NAME | Generated postgresql db name  | We generate it for you. |  | | Yes |
-| DB_INITIALIZE | This command will be executed once after deployment.  | `bin/rake db:setup RAILS_ENV=production` |  | Yes | |
-| DB_MIGRATE | This command will be executed after each deployment.  | `bin/rake db:migrate RAILS_ENV=production` |  | Yes | |
+| DB_INITIALIZE | This command will be executed once after deployment. | `bin/rake db:setup RAILS_ENV=production` |  | Yes | |
+| DB_MIGRATE | This command will be executed after each deployment. | `bin/rake db:migrate RAILS_ENV=production` |  | Yes | |
 | S3_BUCKET | S3 environment specific bucket name. | We generate it for you. |  | | Yes |
 | S3_BUCKET_DOMAIN | S3 publicly accessible domain. | We generate it for you. |  | | Yes |
 | S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. | We generate it for you. |  | | Yes |
@@ -235,6 +242,10 @@ optional and exist to provide additional functionality or flexibility.
 | TF_VAR_PG_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
 | TF_VAR_PG_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
 | WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
+| SMTP_HOST | AWS SES SMTP server, region specific   | We generate it for you. |  | | Yes |
+| SMTP_FROM | AWS SES validated from email address   | `notifications@my-company.com` | | Yes | Yes |
+| SMTP_USER | SMTP user name   | We generate it for you. | | | Yes |
+| SMTP_PASSWORD | SMTP password   | We generate it for you. | | | Yes |
 
 ### Examples
 
