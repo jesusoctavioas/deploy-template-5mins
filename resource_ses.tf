@@ -3,7 +3,7 @@ resource "aws_ses_email_identity" "email_identity" {
 }
 
 resource "aws_iam_user" "smtp_user" {
-  name = "smtp_user"
+  name = "smtp_user_${var.SHORT_ENVIRONMENT_NAME}"
   tags = local.common_tags
 }
 
