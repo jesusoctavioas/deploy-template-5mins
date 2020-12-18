@@ -1,3 +1,7 @@
+# service desk email
+SERVICE_DESK_EMAIL=incoming+$CI_PROJECT_PATH_SLUG-$CI_PROJECT_ID-issue-@incoming.gitlab.com
+echo "$SERVICE_DESK_EMAIL"
+
 # extract terraform state
 gitlab-terraform output -json >tf_output.json
 jq --raw-output ".public_ip.value" tf_output.json >public_ip.txt
