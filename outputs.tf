@@ -46,7 +46,7 @@ output "s3_bucket_regional_domain" {
 }
 
 output "smtp_user" {
-  value = aws_iam_access_key.smtp_user_access_key.user
+  value = aws_iam_access_key.smtp_user_access_key.id
 }
 
 output "smtp_password" {
