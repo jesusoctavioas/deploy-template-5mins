@@ -15,7 +15,7 @@ jq --raw-output ".smtp_password.value" tf_output.json >smtp_password.txt
 chmod 0600 private_key.pem
 
 # variables
-CERT_EMAIL=${CERT_EMAIL:-TF_VAR_SERVICE_DESK_EMAIL}
+CERT_EMAIL=${CERT_EMAIL:-$TF_VAR_SERVICE_DESK_EMAIL}
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 DATABASE_URL=$(cat database_url.txt)
 DATABASE_ENDPOINT=$(cat database_endpoint.txt)
