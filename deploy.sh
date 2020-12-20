@@ -1,34 +1,30 @@
 # extract terraform state
 gitlab-terraform output -json >tf_output.json
-jq --raw-output ".public_ip.value" tf_output.json >public_ip.txt
 jq --raw-output ".private_key.value.private_key_pem" tf_output.json >private_key.pem
-jq --raw-output ".database_url.value" tf_output.json >database_url.txt
-jq --raw-output ".database_endpoint.value" tf_output.json >database_endpoint.txt
-jq --raw-output ".database_username.value" tf_output.json >database_username.txt
-jq --raw-output ".database_password.value" tf_output.json >database_password.txt
-jq --raw-output ".database_name.value" tf_output.json >database_name.txt
-jq --raw-output ".s3_bucket.value" tf_output.json >s3_bucket.txt
-jq --raw-output ".s3_bucket_domain.value" tf_output.json >s3_bucket_domain.txt
-jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json >s3_bucket_regional_domain.txt
-jq --raw-output ".smtp_user.value" tf_output.json >smtp_user.txt
-jq --raw-output ".smtp_password.value" tf_output.json >smtp_password.txt
 chmod 0600 private_key.pem
 
 # variables
+PUBLIC_IP=$(jq --raw-output ".public_ip.value" tf_output.json)
 CERT_EMAIL=${CERT_EMAIL:-$TF_VAR_SERVICE_DESK_EMAIL}
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
-DATABASE_URL=$(cat database_url.txt)
-DATABASE_ENDPOINT=$(cat database_endpoint.txt)
-DATABASE_USERNAME=$(cat database_username.txt)
-DATABASE_PASSWORD=$(cat database_password.txt)
-DATABASE_NAME=$(cat database_name.txt)
-S3_BUCKET=$(cat s3_bucket.txt)
-S3_BUCKET_DOMAIN=$(cat s3_bucket_domain.txt)
-S3_BUCKET_REGIONAL_DOMAIN=$(cat s3_bucket_regional_domain.txt)
+
+# database variables
+DATABASE_URL=$(jq --raw-output ".database_url.value" tf_output.json)
+DATABASE_ENDPOINT=$(jq --raw-output ".database_endpoint.value" tf_output.json)
+DATABASE_USERNAME=$(jq --raw-output ".database_username.value" tf_output.json)
+DATABASE_PASSWORD=$(jq --raw-output ".database_password.value" tf_output.json)
+DATABASE_NAME=$(jq --raw-output ".database_name.value" tf_output.json)
+
+# s3 variables
+S3_BUCKET=$(jq --raw-output ".s3_bucket.value" tf_output.json)
+S3_BUCKET_DOMAIN=$(jq --raw-output ".s3_bucket_domain.value" tf_output.json)
+S3_BUCKET_REGIONAL_DOMAIN=$(jq --raw-output ".s3_bucket_regional_domain.value" tf_output.json)
+
+# smtp variables
 SMTP_HOST="email-smtp.$AWS_DEFAULT_REGION.amazonaws.com"
 SMTP_FROM=${SMTP_FROM:-TF_VAR_SERVICE_DESK_EMAIL}
-SMTP_USER=$(cat smtp_user.txt)
-SMTP_PASSWORD=$(cat smtp_password.txt)
+SMTP_USER=$(jq --raw-output ".smtp_user.value" tf_output.json)
+SMTP_PASSWORD=$(jq --raw-output ".smtp_password.value" tf_output.json)
 
 # extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
@@ -45,42 +41,43 @@ GL_VARs=" -e $GL_VARs\""                                                    # wr
 # Set Image name. Should be in sync with AutoDevOps build stage naming.
 # Taken from https://gitlab.com/gitlab-org/gitlab/-/raw/22f5722e3f39f56b5235b5893d081f022d00fa4c/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 if [[ -z "$CI_COMMIT_TAG" ]]; then
-  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
   export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
 else
-  export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
   export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
 fi
 
 # update package repos
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo apt update
 "
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to update 'apt' package manager on EC2 instance"
   exit 1
 fi
 
 # install and start docker
 # log in to gitlab container registry
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo snap install docker
     sudo docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
 "
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to install docker or login to container registry on EC2 instance"
   exit 1
 fi
 
 # stop and remove all existing containers
 # delete all images
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" '
     sudo docker rmi -f $(docker images -a -q)
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to stop or remove containers and container images on EC2 instance"
   exit 1
 fi
 
@@ -88,7 +85,7 @@ fi
 # run container
 # DB_INITIALIZE
 # DB_MIGRATE
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo docker pull $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_APPLICATION_TAG
 
     sudo docker run --name container_webapp                                 \
@@ -149,7 +146,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 echo \"DB_INITIALIZE successful\"
                 touch DB_INITIALIZE.success
             else
-                echo \"DB_INITIALIZE failed\"
+                echo \"🟥 DB_INITIALIZE failed\"
                 exit 1
             fi
         fi
@@ -180,13 +177,14 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         if [ \$? -eq 0 ]; then
             echo \"DB_MIGRATE successful\"
         else
-            echo \"DB_MIGRATE failed\"
+            echo \"🟥 DB_MIGRATE failed\"
             exit 1
         fi
     fi
 "
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to start containerized webapp on EC2 instance"
   exit 1
 fi
 
@@ -201,7 +199,7 @@ echo "DYNAMIC_ENVIRONMENT_URL=$DYNAMIC_ENVIRONMENT_URL" >>deploy.env
 # install nginx
 # delete existing nginx conf (if exists)
 # write nginx config
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo apt install nginx -y
     sudo nginx -v
     rm -f conf.nginx
@@ -209,20 +207,21 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to install Nginx or create Nginx configuration on EC2 instance"
   exit 1
 fi
 
 # kill running nginx process (if exists)
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo nginx -s stop && echo 'nginx: stopped'
 "
 
 if [ $? -ne 0 ]; then
-  echo "nginx could not be stopped, but that's okay"
+  echo "🟧 Nginx could not be stopped, but that's probably okay. On first run, there's no Nginx instance to stop."
 fi
 
 # update package repos
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" "
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" "
     sudo snap refresh
     sudo snap install --classic certbot
 
@@ -239,16 +238,18 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
 "
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to install or execute Certbot on EC2 instance"
   exit 1
 fi
 
 # test nginx config
 # start nginx process
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$(cat public_ip.txt)" '
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" '
     sudo nginx -t -c ~/conf.nginx
     sudo nginx -c ~/conf.nginx && echo "nginx: started"
 '
 
 if [ $? -ne 0 ]; then
+  echo "🟥 Failed to start Nginx on EC2 instance"
   exit 1
 fi
