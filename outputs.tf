@@ -44,3 +44,12 @@ output "s3_bucket_domain" {
 output "s3_bucket_regional_domain" {
   value = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
 }
+
+output "smtp_user" {
+  value = aws_iam_access_key.smtp_user_access_key.id
+}
+
+output "smtp_password" {
+  value = aws_iam_access_key.smtp_user_access_key.ses_smtp_password_v4
+  sensitive = true
+}
