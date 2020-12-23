@@ -27,6 +27,7 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
+1. [Feedback](#feedback)
 
 ### Assumption
 
@@ -256,3 +257,9 @@ the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/ex
 
 Additional experiments and test cases are located in
 the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/sandbox).
+
+### Feedback
+
+This project is in early stage of development. And we are looking for your feedback. 
+If everything worked well for you, feel free to mention @gitlab or @dzaporozhets in social networks. 
+But if you experience any problems or have suggestions, please open an issue in this project.  
