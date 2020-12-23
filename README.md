@@ -28,6 +28,7 @@ and more examples.
 1. [Variables](#variables)
 1. [Examples](#examples)
 1. [Feedback](#feedback)
+1. [Contributing](#contributing)
 
 ### Assumption
 
@@ -263,3 +264,7 @@ the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/san
 This project is in early stage of development. And we are looking for your feedback. 
 If everything worked well for you, feel free to mention @gitlab, @srirangan or @dzaporozhets in social networks. 
 But if you experience any problems or have suggestions, please open an issue in this project.  
+
+### Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
