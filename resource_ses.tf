@@ -20,3 +20,14 @@ resource "aws_iam_user_policy" "smtp_user_policy" {
 }
 POLICY
 }
+
+# Output
+
+output "smtp_user" {
+  value = aws_iam_access_key.smtp_user_access_key.id
+}
+
+output "smtp_password" {
+  value = aws_iam_access_key.smtp_user_access_key.ses_smtp_password_v4
+  sensitive = true
+}
