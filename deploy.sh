@@ -5,7 +5,7 @@ chmod 0600 private_key.pem
 
 # variables
 PUBLIC_IP=$(jq --raw-output ".public_ip.value" tf_output.json)
-CERT_EMAIL=${CERT_EMAIL:-$SERVICE_DESK_EMAIL}
+CERT_EMAIL=${CERT_EMAIL:-$TF_VAR_SERVICE_DESK_EMAIL}
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 
 # database variables
