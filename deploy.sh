@@ -5,7 +5,7 @@ chmod 0600 private_key.pem
 
 # variables
 PUBLIC_IP=$(jq --raw-output ".public_ip.value" tf_output.json)
-CERT_EMAIL=${CERT_EMAIL:-$TF_VAR_SERVICE_DESK_EMAIL}
+CERT_EMAIL=${CERT_EMAIL:-$SERVICE_DESK_EMAIL}
 WEBAPP_PORT=${WEBAPP_PORT:-5000}
 
 # database variables
@@ -22,7 +22,6 @@ S3_BUCKET_REGIONAL_DOMAIN=$(jq --raw-output ".s3_bucket_regional_domain.value" t
 
 # smtp variables
 SMTP_HOST="email-smtp.$AWS_DEFAULT_REGION.amazonaws.com"
-SMTP_FROM=${SMTP_FROM:-TF_VAR_SERVICE_DESK_EMAIL}
 SMTP_USER=$(jq --raw-output ".smtp_user.value" tf_output.json)
 SMTP_PASSWORD=$(jq --raw-output ".smtp_password.value" tf_output.json)
 

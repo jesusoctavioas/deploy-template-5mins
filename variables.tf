@@ -17,10 +17,6 @@ variable "EC2_INSTANCE_TYPE" {
   type = string
 }
 
-variable "SERVICE_DESK_EMAIL" {
-  type = string
-}
-
 variable "SMTP_FROM" {
   default = ""
   type = string
