@@ -32,7 +32,7 @@ and more examples.
 
 ### Assumption
 
-You have a Dockerized webapp with a `Dockerfile`.
+You have a Dockerized webapp with a `Dockerfile` or if [Auto Build](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build) works.
 
 Your webapp is expected to run on port `5000`, however this can
 be [configured](#list-of-all-configuration-variables).
@@ -56,15 +56,17 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
   - Variables to declare:
-    - `AWS_ACCESS_KEY_ID`
-    - `AWS_SECRET_ACCESS_KEY`
-    - `AWS_DEFAULT_REGION`
+    - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+    - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+    - `AWS_DEFAULT_REGION` which defaults to us-east-1 if not set
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
 include:
   remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
 ```
+
+or use the 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
 
 3. Finally, `commit` changes, `push` to GitLab
 
