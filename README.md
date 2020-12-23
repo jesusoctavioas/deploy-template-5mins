@@ -66,6 +66,8 @@ include:
 
 3. Finally, `commit` changes, `push` to GitLab
 
+**NOTE: You need to have sufficient permissions for AWS IAM user to successfuly create resources like RDS or EC2. If you are not sure what correct permissions are then use `AdministratorAccess` as a temporay solution.** 
+
 ### Environments
 
 - Pipeline automatically creates `environments`

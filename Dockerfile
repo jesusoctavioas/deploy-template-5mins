@@ -1,7 +1,6 @@
 FROM registry.gitlab.com/gitlab-org/terraform-images/stable:latest
 
 COPY main.tf .
-COPY outputs.tf .
 COPY resource_db.tf .
 COPY resource_ec2.tf .
 COPY resource_s3.tf .

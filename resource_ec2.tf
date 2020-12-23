@@ -85,3 +85,14 @@ resource "aws_eip" "public_ip" {
 
   tags = local.common_tags
 }
+
+# Output
+
+output "public_ip" {
+  value = aws_eip.public_ip.public_ip
+}
+
+output "private_key" {
+  value = tls_private_key.private_key
+  sensitive = true
+}

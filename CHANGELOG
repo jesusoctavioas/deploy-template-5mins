@@ -1,3 +1,8 @@
+2.3.0
+- CERT_EMAIL variable is not required anymore. 
+- Service desk email used by default for SSL
+- AWS SES support through SMTP
+
 2.2.0
 - HTTPS support by default
 - CERT_EMAIL variable is now required
