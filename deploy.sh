@@ -30,10 +30,6 @@ REDIS_ADDRESS=$(jq --raw-output ".redis_address.value" tf_output.json)
 REDIS_PORT=$(jq --raw-output ".redis_port.value" tf_output.json)
 REDIS_AVAILABILITY_ZONE=$(jq --raw-output ".redis_availability_zone.value" tf_output.json)
 
-echo $REDIS_ADDRESS
-echo $REDIS_PORT
-echo $REDIS_AVAILABILITY_ZONE
-
 # extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
 sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
