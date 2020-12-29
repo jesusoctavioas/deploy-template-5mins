@@ -18,6 +18,8 @@ and more examples.
 1. [Environments](#environments)
 1. [Using the Postgres Database](#using-the-postgres-database)
 1. [Using the S3 Bucket](#using-the-s3-bucket)
+1. [Using the SMTP Service](#using-the-smtp-service)
+1. [Using the Redis Cluster](#using-the-redis-cluster)
 1. [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
 1. [Variables Provided to Webapp](#variables-exposed-to-webapp)
 1. [Rollback Deployments](#rollback-deployments)
@@ -110,6 +112,22 @@ An S3 Bucket is generated for your webapp with `public-read` settings. The follo
 made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCKET_REGIONAL_DOMAIN`.
 
 You will need to use your AWS credentials in addition to the S3 Bucket name for uploading content.
+
+### Using the SMTP Service
+
+AWS SES provides SMTP service. This service is made available to your webapp if you declare the `SMTP_FROM` variable.
+
+`SMTP_FROM` is an email address that is the sender of emails by your webapp. AWS SES will require this email to be 
+verified.  In sandbox mode, the recipient emails also need to be verified.  To turn off sandbox mode, please log in to your AWS 
+console and configure SES.
+
+### Using the Redis Cluster
+
+If you declare `REDIS_NODE_TYPE` with a value defined [here](https://aws.amazon.com/elasticache/pricing/), a Redis 
+cluster will be provisioned for your application. 
+
+Once provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT` and `REDIS_AVAILABILITY_ZONE` are made 
+available to your webapp.
 
 ### Providing Custom Environment Variables to Webapp
 
