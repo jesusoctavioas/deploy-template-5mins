@@ -168,6 +168,10 @@ The following variables are provided to your containerized webapp. Thus are avai
 - SMTP_USER                     # SMTP user
 - SMTP_PASSWORD                 # SMTP password
 
+- REDIS_ADDRESS                 # Address of your Redis cluster
+- REDIS_PORT                    # Port of your Redis cluster
+- REDIS_AVAILABILITY_ZONE       # Availablity zone in case location of data storage matters
+
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
 
