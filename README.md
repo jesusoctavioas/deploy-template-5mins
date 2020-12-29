@@ -202,6 +202,9 @@ variables:
   # smtp
   SMTP_FROM: 'notifications@my-company.com'
 
+  # redis
+  REDIS_NODE_TYPE: 'cache.t2.micro'
+
   # pass custom variables to webapp
   GL_VAR_HELLO: World
   GL_VAR_FOO: Bar
@@ -252,6 +255,10 @@ optional and exist to provide additional functionality or flexibility.
 | SMTP_FROM | AWS SES validated from email address   | `notifications@my-company.com` | | Yes | Yes |
 | SMTP_USER | SMTP user name   | We generate it for you. | | | Yes |
 | SMTP_PASSWORD | SMTP password   | We generate it for you. | | | Yes |
+| REDIS_NODE_TYPE | Size of the Redis node, possible values [aws.amazon.com/elasticache/pricing](https://aws.amazon.com/elasticache/pricing/) If undefined, Redis / Elasticache is not provisioned | `cache.t2.micro` | | Yes | |
+| REDIS_ADDRESS | Address of your Redis cluster | We generate it for you. | | | Yes |
+| REDIS_PORT | Port of your Redis cluster | We generate it for you. | | | Yes |
+| REDIS_AVAILABILITY_ZONE | Availability zone of your Redis cluster | We generate it for you. | | | Yes |
 
 ### Examples
 
