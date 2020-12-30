@@ -5,6 +5,7 @@ COPY resource_db.tf .
 COPY resource_ec2.tf .
 COPY resource_s3.tf .
 COPY resource_ses.tf .
+COPY resource_redis.tf .
 COPY variables.tf .
 
 COPY deploy.sh .

@@ -25,6 +25,11 @@ SMTP_HOST="email-smtp.$AWS_DEFAULT_REGION.amazonaws.com"
 SMTP_USER=$(jq --raw-output ".smtp_user.value" tf_output.json)
 SMTP_PASSWORD=$(jq --raw-output ".smtp_password.value" tf_output.json)
 
+# redis variables
+REDIS_ADDRESS=$(jq --raw-output ".redis_address.value" tf_output.json)
+REDIS_PORT=$(jq --raw-output ".redis_port.value" tf_output.json)
+REDIS_AVAILABILITY_ZONE=$(jq --raw-output ".redis_availability_zone.value" tf_output.json)
+
 # extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
 sed 's/GL_VAR_//gi' gl_vars_demp.txt >gl_vars_prefix_removed.txt            # strip GL_VAR_ prefix
@@ -70,7 +75,7 @@ fi
 # stop and remove all existing containers
 # delete all images
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" '
-    sudo docker rmi -f $(docker images -a -q)
+    sudo docker rmi -f $(sudo docker images -a -q)
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
@@ -103,6 +108,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e SMTP_FROM=$SMTP_FROM                                             \
         -e SMTP_USER=$SMTP_USER                                             \
         -e SMTP_PASSWORD=$SMTP_PASSWORD                                     \
+        -e REDIS_ADDRESS=$REDIS_ADDRESS                                     \
+        -e REDIS_PORT=$REDIS_PORT                                           \
+        -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE                 \
         $GL_VARs                                                            \
         -d                                                                  \
         -p 8000:$WEBAPP_PORT                                                \
@@ -138,6 +146,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 -e SMTP_FROM=$SMTP_FROM                                     \
                 -e SMTP_USER=$SMTP_USER                                     \
                 -e SMTP_PASSWORD=$SMTP_PASSWORD                             \
+                -e REDIS_ADDRESS=$REDIS_ADDRESS                             \
+                -e REDIS_PORT=$REDIS_PORT                                   \
+                -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE         \
                 $GL_VARs                                                    \
                 -i                                                          \
                 container_webapp $DB_INITIALIZE
@@ -170,6 +181,9 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             -e SMTP_FROM=$SMTP_FROM                                         \
             -e SMTP_USER=$SMTP_USER                                         \
             -e SMTP_PASSWORD=$SMTP_PASSWORD                                 \
+            -e REDIS_ADDRESS=$REDIS_ADDRESS                                 \
+            -e REDIS_PORT=$REDIS_PORT                                       \
+            -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE             \
             $GL_VARs                                                        \
             -i                                                              \
             container_webapp $DB_MIGRATE
@@ -188,7 +202,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # determine domain
-CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.nip.io}
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.resolve.anyip.host}
 NGINX_CONF=$(cat conf.nginx)
 DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 

@@ -18,6 +18,8 @@ and more examples.
 1. [Environments](#environments)
 1. [Using the Postgres Database](#using-the-postgres-database)
 1. [Using the S3 Bucket](#using-the-s3-bucket)
+1. [Using the SMTP Service](#using-the-smtp-service)
+1. [Using the Redis Cluster](#using-the-redis-cluster)
 1. [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
 1. [Variables Provided to Webapp](#variables-exposed-to-webapp)
 1. [Rollback Deployments](#rollback-deployments)
@@ -32,7 +34,7 @@ and more examples.
 
 ### Assumption
 
-You have a Dockerized webapp with a `Dockerfile`.
+You have a Dockerized webapp with a `Dockerfile` or if [Auto Build](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build) works.
 
 Your webapp is expected to run on port `5000`, however this can
 be [configured](#list-of-all-configuration-variables).
@@ -56,15 +58,17 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 1. Setup AWS credentials in your GitLab Project or Group CICD variables
   - Variables to declare:
-    - `AWS_ACCESS_KEY_ID`
-    - `AWS_SECRET_ACCESS_KEY`
-    - `AWS_DEFAULT_REGION`
+    - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+    - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+    - `AWS_DEFAULT_REGION` which defaults to us-east-1 if not set
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
 include:
   remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
 ```
+
+or use the 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
 
 3. Finally, `commit` changes, `push` to GitLab
 
@@ -109,6 +113,22 @@ made available to your app for use: `S3_BUCKET`, `S3_BUCKET_DOMAIN` and `S3_BUCK
 
 You will need to use your AWS credentials in addition to the S3 Bucket name for uploading content.
 
+### Using the SMTP Service
+
+AWS SES provides SMTP service. This service is made available to your webapp if you declare the `SMTP_FROM` variable.
+
+`SMTP_FROM` is an email address that is the sender of emails by your webapp. AWS SES will require this email to be 
+verified.  In sandbox mode, the recipient emails also need to be verified.  To turn off sandbox mode, please log in to your AWS 
+console and configure SES.
+
+### Using the Redis Cluster
+
+If you declare `REDIS_NODE_TYPE` with a value defined [here](https://aws.amazon.com/elasticache/pricing/), a Redis 
+cluster will be provisioned for your application. 
+
+Once provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT` and `REDIS_AVAILABILITY_ZONE` are made 
+available to your webapp.
+
 ### Providing Custom Environment Variables to Webapp
 
 Your application might need custom environment variables. These can be passed by declaring them with
@@ -147,6 +167,10 @@ The following variables are provided to your containerized webapp. Thus are avai
 - SMTP_FROM                     # AWS SES validated from email address
 - SMTP_USER                     # SMTP user
 - SMTP_PASSWORD                 # SMTP password
+
+- REDIS_ADDRESS                 # Address of your Redis cluster
+- REDIS_PORT                    # Port of your Redis cluster
+- REDIS_AVAILABILITY_ZONE       # Availablity zone in case location of data storage matters
 
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
@@ -200,6 +224,9 @@ variables:
   # smtp
   SMTP_FROM: 'notifications@my-company.com'
 
+  # redis
+  REDIS_NODE_TYPE: 'cache.t2.micro'
+
   # pass custom variables to webapp
   GL_VAR_HELLO: World
   GL_VAR_FOO: Bar
@@ -216,7 +243,7 @@ infrastructure even on protected branch.
 ### Enabling SSL
 
 - SSL is enabled for all environments
-- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.xip.io`
+- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.anyip.host`
 - For custom domain, define `CERT_DOMAIN` variable for your pipeline
   - This can be defined in `.gitlab-ci.yml` alongwith `CERT_EMAIL`
 
@@ -250,6 +277,10 @@ optional and exist to provide additional functionality or flexibility.
 | SMTP_FROM | AWS SES validated from email address   | `notifications@my-company.com` | | Yes | Yes |
 | SMTP_USER | SMTP user name   | We generate it for you. | | | Yes |
 | SMTP_PASSWORD | SMTP password   | We generate it for you. | | | Yes |
+| REDIS_NODE_TYPE | Size of the Redis node, possible values [aws.amazon.com/elasticache/pricing](https://aws.amazon.com/elasticache/pricing/) If undefined, Redis / Elasticache is not provisioned | `cache.t2.micro` | | Yes | |
+| REDIS_ADDRESS | Address of your Redis cluster | We generate it for you. | | | Yes |
+| REDIS_PORT | Port of your Redis cluster | We generate it for you. | | | Yes |
+| REDIS_AVAILABILITY_ZONE | Availability zone of your Redis cluster | We generate it for you. | | | Yes |
 
 ### Examples
 

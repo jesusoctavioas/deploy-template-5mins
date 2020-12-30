@@ -25,3 +25,8 @@ variable "SMTP_FROM" {
   default = ""
   type = string
 }
+
+variable "REDIS_NODE_TYPE" {
+  default = ""
+  type = string
+}
