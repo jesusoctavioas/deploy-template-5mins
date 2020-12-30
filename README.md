@@ -56,11 +56,10 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 ### Usage
 
-1. Setup AWS credentials in your GitLab Project or Group CICD variables
-  - Variables to declare:
-    - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
-    - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
-    - `AWS_DEFAULT_REGION` which defaults to us-east-1 if not set
+1. Set the following [AWS](https://aws.amazon.com/) credentials as [GitLab CI/CD environment variables](https://docs.gitlab.com/ee/ci/variables/) which you can find under Project => Settings => CI/CD => Variables. If you want to have [review apps](https://docs.gitlab.com/ee/ci/review_apps/) make sure to not [protect the variable](https://docs.gitlab.com/ee/ci/variables/#protect-a-custom-variable).
+  - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+  - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+  - `AWS_DEFAULT_REGION` which defaults to us-east-1 if not set
 2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
 
 ```yaml
