@@ -61,16 +61,16 @@ By default, the following AWS free tier infrastructure is provisioned:
   - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
   - `AWS_DEFAULT_REGION` which is optional and defaults to us-east-1 if not set
 
-2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
+2. Create `.gitlab-ci.yml` file in project root, and `include` the Five Minute yml file:
 
 ```yaml
 include:
   remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
 ```
 
-or use the full 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
+or embed the full 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
 
-3. After the `.gitlab-ci.yml` file is added to the repository a new [pipeline](https://docs.gitlab.com/ee/ci/pipelines/) will start which you can see under the menu CICD => Pipelines. When the pipeline completed successful a link to your application will be available from the menu Operations => Environments => master => View Environment.
+3. After the `.gitlab-ci.yml` file is added to the repository a new [pipeline](https://docs.gitlab.com/ee/ci/pipelines/) will start which you can see under the menu CI/CD => Pipelines. When the pipeline completed successful a link to your running application will be available from the menu Operations => Environments => master => View Environment.
 
 ### Environments
 
