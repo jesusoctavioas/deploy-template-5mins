@@ -266,3 +266,7 @@ if [ $? -ne 0 ]; then
   echo "🟥 Failed to start Nginx on EC2 instance"
   exit 1
 fi
+
+# publish url
+
+echo "🌏 $DYNAMIC_ENVIRONMENT_URL"
