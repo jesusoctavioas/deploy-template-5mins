@@ -75,7 +75,7 @@ fi
 # stop and remove all existing containers
 # delete all images
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.pem ubuntu@"$PUBLIC_IP" '
-    sudo docker rmi -f $(docker images -a -q)
+    sudo docker rmi -f $(sudo docker images -a -q)
     sudo docker container stop $(sudo docker container ps -aq) || echo \"No running containers to be stopped\"
     sudo docker container rm $(sudo docker container ps -aq) || echo \"No existing containers to be removed\"
 '
@@ -202,7 +202,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # determine domain
-CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.nip.io}
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.resolve.anyip.host}
 NGINX_CONF=$(cat conf.nginx)
 DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 

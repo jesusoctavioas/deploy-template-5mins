@@ -12,7 +12,9 @@ This project is used for template development and roadmap management. The follow
 the requirements and provide documentation to walk you through requirements, usage, customizations
 and more examples.
 
-1. [Assumption](#assumption)
+### Table of Contents
+
+1. [Prerequisites](#prerequisites)
 1. [Infrastructure](#infrastructure)
 1. [Usage](#usage)
 1. [Environments](#environments)
@@ -32,12 +34,10 @@ and more examples.
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
-### Assumption
+### Prerequisites
 
-You have a Dockerized webapp with a `Dockerfile` or if [Auto Build](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build) works.
-
-Your webapp is expected to run on port `5000`, however this can
-be [configured](#list-of-all-configuration-variables).
+1. You have a Dockerized webapp with a `Dockerfile` or [Auto Build](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build) works for your application.
+1. Your containerized app runs on port 5000 (default setting for Auto Build) or `WEBAPP_PORT` is set in `.gitlab-ci.yml`
 
 ### Infrastructure
 
@@ -56,23 +56,21 @@ By default, the following AWS free tier infrastructure is provisioned:
 
 ### Usage
 
-1. Setup AWS credentials in your GitLab Project or Group CICD variables
-  - Variables to declare:
-    - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
-    - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
-    - `AWS_DEFAULT_REGION` which defaults to us-east-1 if not set
-2. Create `.gitlab-ci.yml` file in project root, and `include` Five Minute Docker:
+1. Set the following [AWS](https://aws.amazon.com/) credentials as [GitLab CI/CD environment variables](https://docs.gitlab.com/ee/ci/variables/) which you can find under Project => Settings => CI/CD => Variables. If you want to have [review apps](https://docs.gitlab.com/ee/ci/review_apps/) make sure to not [protect the variable](https://docs.gitlab.com/ee/ci/variables/#protect-a-custom-variable).
+  - `AWS_ACCESS_KEY_ID` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key). You need to have sufficient permissions for the AWS IAM user to successfuly create resources like RDS or EC2. If you are not sure what correct permissions are then use `AdministratorAccess` as a temporay solution.
+  - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
+  - `AWS_DEFAULT_REGION` which is optional and defaults to us-east-1 if not set
+
+2. Create `.gitlab-ci.yml` file in project root, and `include` the Five Minute yml file:
 
 ```yaml
 include:
   remote: https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/raw/stable/deploy.yml
 ```
 
-or use the 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
+or embed the full 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) 
 
-3. Finally, `commit` changes, `push` to GitLab
-
-**NOTE: You need to have sufficient permissions for AWS IAM user to successfuly create resources like RDS or EC2. If you are not sure what correct permissions are then use `AdministratorAccess` as a temporay solution.** 
+3. After the `.gitlab-ci.yml` file is added to the repository a new [pipeline](https://docs.gitlab.com/ee/ci/pipelines/) will start which you can see under the menu CI/CD => Pipelines. When the pipeline completed successful a link to your running application will be available from the menu Operations => Environments => master => View Environment.
 
 ### Environments
 
@@ -179,11 +177,6 @@ The following variables are provided to your containerized webapp. Thus are avai
 
 - Clean way to rollback is to push a revert commit
 
-### Customizing the Port
-
-By default, the containerized app's port 5000 is exposed. This can be modified by explicitly
-defining `WEBAPP_PORT` in your `.gitlab-ci.yml`
-
 ### Configure Infra Resources
 
 You can set the environment variables `TF_VAR_EC2_INSTANCE_TYPE`, `TF_VAR_PG_INSTANCE_CLASS`
@@ -243,7 +236,7 @@ infrastructure even on protected branch.
 ### Enabling SSL
 
 - SSL is enabled for all environments
-- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.xip.io`
+- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.anyip.host`
 - For custom domain, define `CERT_DOMAIN` variable for your pipeline
   - This can be defined in `.gitlab-ci.yml` alongwith `CERT_EMAIL`
 
