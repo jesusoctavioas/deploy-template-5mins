@@ -268,5 +268,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # publish url
-
 echo "🌏 $DYNAMIC_ENVIRONMENT_URL"
