@@ -17,7 +17,7 @@ fail_db_init:
         job_status:
             build: success
             terraform_apply: success
-            deploy: success
+            deploy: failed
             terraform_destroy: skipped
 
 fail_db_migrate:
@@ -30,7 +30,7 @@ fail_db_migrate:
         job_status:
             build: success
             terraform_apply: success
-            deploy: success
+            deploy: failed
             terraform_destroy: skipped
 
 success:
