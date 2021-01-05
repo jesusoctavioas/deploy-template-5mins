@@ -1,0 +1,26 @@
+aws_vars_missing:
+    trigger:
+        project_id: 22488569
+    assertions:
+        status: success
+
+fail_db_init:
+    trigger:
+        project_id: 22975621
+        brainch: fail-db-init
+    assertions:
+        status: failed
+
+fail_db_migrate:
+    trigger:
+        project_id: 22975621
+        brainch: fail-db-migrate
+    assertions:
+        status: failed
+
+success:
+    trigger:
+        project_id: 22975621
+        brainch: success
+    assertions:
+        status: success
