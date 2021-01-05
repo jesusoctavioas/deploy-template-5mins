@@ -3,7 +3,7 @@ aws_vars_missing:
         project_id: 22488569
     assertions:
         pipeline_status: success
-        job_count: 3
+        job_count: 1
         job_status:
             build: success
 
@@ -13,11 +13,12 @@ fail_db_init:
         branch: fail-db-init
     assertions:
         pipeline_status: failed
-        job_count: 3
+        job_count: 4
         job_status:
             build: success
             terraform_apply: success
             deploy: success
+            terraform_destroy: skipped
 
 fail_db_migrate:
     trigger:
@@ -25,11 +26,12 @@ fail_db_migrate:
         branch: fail-db-migrate
     assertions:
         pipeline_status: failed
-        job_count: 3
+        job_count: 4
         job_status:
             build: success
             terraform_apply: success
             deploy: success
+            terraform_destroy: skipped
 
 success:
     trigger:
