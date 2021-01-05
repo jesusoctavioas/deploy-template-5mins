@@ -7,20 +7,20 @@ aws_vars_missing:
 fail_db_init:
     trigger:
         project_id: 22975621
-        brainch: fail-db-init
+        branch: fail-db-init
     assertions:
         status: failed
 
 fail_db_migrate:
     trigger:
         project_id: 22975621
-        brainch: fail-db-migrate
+        branch: fail-db-migrate
     assertions:
         status: failed
 
 success:
     trigger:
         project_id: 22975621
-        brainch: success
+        branch: success
     assertions:
         status: success
