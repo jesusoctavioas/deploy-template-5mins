@@ -2,25 +2,25 @@ aws_vars_missing:
     trigger:
         project_id: 22488569
     assertions:
-        status: success
+        pipeline_status: success
 
 fail_db_init:
     trigger:
         project_id: 22975621
         branch: fail-db-init
     assertions:
-        status: failed
+        pipeline_status: failed
 
 fail_db_migrate:
     trigger:
         project_id: 22975621
         branch: fail-db-migrate
     assertions:
-        status: failed
+        pipeline_status: failed
 
 success:
     trigger:
         project_id: 22975621
         branch: success
     assertions:
-        status: success
+        pipeline_status: success
