@@ -7,5 +7,6 @@ include:
 
 rptf:
   stage: test
-  image: registry.gitlab.com/sri-at-gitlab/projects/remote-pipeline-test-framework/framework/master
+  image: python:3
+  before_script: pip install rptf
   script: rptf
