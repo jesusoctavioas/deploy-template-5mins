@@ -8,5 +8,7 @@ include:
 rptf:
   stage: test
   image: python:3
-  before_script: pip install rptf
-  script: rptf
+  before_script:
+    - pip install rptf
+  script:
+    - rptf
