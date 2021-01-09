@@ -201,8 +201,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# disable cert_domain if not protected branch or tag
+if [ "$CI_COMMIT_REF_PROTECTED" == "false" ]; then
+    unset CERT_DOMAIN
+fi
+
+# default to resolve.anyip.host
+FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.anyip.host}
+
 # determine domain
-CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.resolve.anyip.host}
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.$FALLBACK_DYNAMIC_DOMAIN}
 NGINX_CONF=$(cat conf.nginx)
 DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 
