@@ -53,6 +53,8 @@ By default, the following AWS free tier infrastructure is provisioned:
   - `db.t2.micro`
   - 20gb allocated storage
 - S3 Bucket
+- (Optional) SMTP service
+- (Optional) Redis service
 
 ### Usage
 
