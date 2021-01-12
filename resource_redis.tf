@@ -9,7 +9,7 @@ resource "aws_elasticache_cluster" "redis" {
 }
 
 resource "aws_security_group" "redis" {
-  name = "${var.ENVIRONMENT_NAME}_DATABASE"
+  name = "${var.ENVIRONMENT_NAME}_REDIS"
   vpc_id = data.aws_vpc.default.id
   tags = local.common_tags
 }
