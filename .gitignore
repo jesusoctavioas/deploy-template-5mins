@@ -6,3 +6,4 @@ tmp*
 .tf
 *.tfstate*
 .terraform
+.terraform.lock.hcl
