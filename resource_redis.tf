@@ -38,6 +38,6 @@ output "redis_availability_zone" {
 }
 
 output "redis_url" {
-  value = var.REDIS_NODE_TYPE != "" ? "${aws_elasticache_cluster.redis.0.cache_nodes.0
+  value = var.REDIS_NODE_TYPE != "" ? "redis://${aws_elasticache_cluster.redis.0.cache_nodes.0
   .address}:${aws_elasticache_cluster.redis.0.port}" : ""
 }
