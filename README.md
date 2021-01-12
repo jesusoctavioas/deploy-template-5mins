@@ -170,7 +170,8 @@ The following variables are provided to your containerized webapp. Thus are avai
 
 - REDIS_ADDRESS                 # Address of your Redis cluster
 - REDIS_PORT                    # Port of your Redis cluster
-- REDIS_AVAILABILITY_ZONE       # Availablity zone in case location of data storage matters
+- REDIS_AVAILABILITY_ZONE       # Availability zone in case location of data storage matters
+- REDIS_URL                     # Redis hostname and port separated with a `:`
 
 - GL_VAR_*                      # All variables prefixed with `GL_VAR_`
 ```
@@ -276,6 +277,7 @@ optional and exist to provide additional functionality or flexibility.
 | REDIS_ADDRESS | Address of your Redis cluster | We generate it for you. | | | Yes |
 | REDIS_PORT | Port of your Redis cluster | We generate it for you. | | | Yes |
 | REDIS_AVAILABILITY_ZONE | Availability zone of your Redis cluster | We generate it for you. | | | Yes |
+| REDIS_URL | Hostname and port of Redis separated by `:` | We generate it for you. | | | Yes |
 
 ### Examples
 

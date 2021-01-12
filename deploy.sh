@@ -29,6 +29,7 @@ SMTP_PASSWORD=$(jq --raw-output ".smtp_password.value" tf_output.json)
 REDIS_ADDRESS=$(jq --raw-output ".redis_address.value" tf_output.json)
 REDIS_PORT=$(jq --raw-output ".redis_port.value" tf_output.json)
 REDIS_AVAILABILITY_ZONE=$(jq --raw-output ".redis_availability_zone.value" tf_output.json)
+REDIS_URL=$(jq --raw-output ".redis_url.value" tf_output.json)
 
 # extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
@@ -111,6 +112,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e REDIS_ADDRESS=$REDIS_ADDRESS                                     \
         -e REDIS_PORT=$REDIS_PORT                                           \
         -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE                 \
+        -e REDIS_URL=$REDIS_URL                                             \
         $GL_VARs                                                            \
         -d                                                                  \
         -p 8000:$WEBAPP_PORT                                                \
@@ -149,6 +151,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 -e REDIS_ADDRESS=$REDIS_ADDRESS                             \
                 -e REDIS_PORT=$REDIS_PORT                                   \
                 -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE         \
+                -e REDIS_URL=$REDIS_URL                                     \
                 $GL_VARs                                                    \
                 -i                                                          \
                 container_webapp $DB_INITIALIZE
@@ -184,6 +187,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             -e REDIS_ADDRESS=$REDIS_ADDRESS                                 \
             -e REDIS_PORT=$REDIS_PORT                                       \
             -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE             \
+            -e REDIS_URL=$REDIS_URL                                         \
             $GL_VARs                                                        \
             -i                                                              \
             container_webapp $DB_MIGRATE

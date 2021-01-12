@@ -36,3 +36,8 @@ output "redis_port" {
 output "redis_availability_zone" {
   value = var.REDIS_NODE_TYPE != "" ? aws_elasticache_cluster.redis.0.availability_zone : ""
 }
+
+output "redis_url" {
+  value = var.REDIS_NODE_TYPE != "" ? "${aws_elasticache_cluster.redis.0.cache_nodes.0
+  .address}:${aws_elasticache_cluster.redis.0.port}" : ""
+}
