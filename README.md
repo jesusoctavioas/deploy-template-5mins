@@ -81,6 +81,8 @@ This is a good choice for development and testing. Or if your GitLab version is 
 
 3. After the `.gitlab-ci.yml` file is added to the repository a new [pipeline](https://docs.gitlab.com/ee/ci/pipelines/) will start which you can see under the menu CI/CD => Pipelines. When the pipeline completed successful a link to your running application will be available from the menu Operations => Environments => master => View Environment.
 
+![frame_generic_light_4__compressed](/uploads/182a5b979f3f35fa164ff5cddf071caf/frame_generic_light_4__compressed.png)
+
 ### Environments
 
 - Pipeline automatically creates `environments`
