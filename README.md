@@ -63,9 +63,11 @@ By default, the following AWS free tier infrastructure is provisioned:
   - `AWS_SECRET_ACCESS_KEY` which you can create in [AWS IAM under Access Keys](https://console.aws.amazon.com/iam/home?region=us-east-1#/security_credentials$access_key)
   - `AWS_DEFAULT_REGION` which is optional and defaults to us-east-1 if not set
 
+![frame_generic_light_2__compressed](/uploads/ad33728c14f28f44c23362d86cadd816/frame_generic_light_2__compressed.png)
+
 2. Create a `.gitlab-ci.yml` file in project root with 5-minute production app [CI template](https://docs.gitlab.com/ee/ci/examples/#cicd-templates) like shown on the picture below:
 
-![frame_generic_light](/uploads/22cf8330a8eb9e91b90040bedce3987c/frame_generic_light.png)
+![frame_generic_light_compressed](/uploads/91fe1bea95dc1f018bf021e81f4c6823/frame_generic_light_compressed.png)
 
 But if you want to use the latest version of template you should create a `.gitlab-ci.yml` file with the following content: 
 
