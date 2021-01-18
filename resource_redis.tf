@@ -1,6 +1,6 @@
 resource "aws_elasticache_cluster" "redis" {
   count = var.REDIS_NODE_TYPE != "" ? 1 : 0
-  cluster_id = "redis-cluster"
+  cluster_id = "redis-cluster-${var.SHORT_ENVIRONMENT_NAME}"
   engine = "redis"
   node_type = var.REDIS_NODE_TYPE
   num_cache_nodes = 1
