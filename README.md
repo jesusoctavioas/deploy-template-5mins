@@ -31,6 +31,7 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
+1. [Examples](#ruby-on-rails-help)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
@@ -295,6 +296,57 @@ the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/ex
 
 Additional experiments and test cases are located in
 the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/sandbox).
+
+### Ruby on Rails help
+
+In this sections we collect helpful information for deploying Ruby on Rails applications. 
+
+##### Master key
+
+Rails uses master key to decrypt `config/credentials.yml.enc`. Find your master key and set it as CI/CD variable `GL_VAR_RAILS_MASTER_KEY` in GitLab project settings. Otherwise deploy may fail. 
+
+##### Database migrations
+
+If you have `Dockerfile` then add next line to `gitlab-ci.yml`:
+
+```
+variables:
+  # executed after every deployment
+  DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
+```
+
+If you don't have a `Dockerfile`, your container is build with herokuish. So database migration command will be different: 
+
+```
+variables:
+    DB_MIGRATE: "/bin/herokuish procfile exec bin/rails db:migrate RAILS_ENV=production"
+```
+
+##### Production environment
+
+For production environment add next line to `gitlab-ci.yml`:
+
+```
+variables:
+    # Rails env production
+    GL_VAR_RAILS_ENV: "production"
+```
+
+Make sure you have your assets precompiled or `config.assets.compile = true` in `environments/production.rb`.
+
+##### Active Storage
+
+Just follow Rails documentation on it. But update `config/storage.yml` with:
+
+```yml
+amazon:
+  service: S3
+  access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+  secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  region: <%= ENV['AWS_DEFAULT_REGION'] %>
+  bucket: <%= ENV['S3_BUCKET'] %>
+```
+
 
 ### Feedback
 
