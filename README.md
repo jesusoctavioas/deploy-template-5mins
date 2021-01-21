@@ -31,7 +31,7 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
-1. [Examples](#ruby-on-rails-help)
+1. [Help with Ruby on Rails apps](#ruby-on-rails-help)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
