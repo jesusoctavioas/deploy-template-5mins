@@ -332,11 +332,19 @@ variables:
     GL_VAR_RAILS_ENV: "production"
 ```
 
-Make sure you have your assets precompiled or `config.assets.compile = true` in `environments/production.rb`.
+Make sure you have your assets precompiled or `config.assets.compile = true` in `config/environments/production.rb`.
 
 ##### Active Storage
 
-Just follow Rails documentation on it. But update `config/storage.yml` with:
+See [Rails documentation](https://edgeguides.rubyonrails.org/active_storage_overview.html). 
+
+Set active storage to amazon in `config/environments/production.rb`:
+
+```ruby
+config.active_storage.service = :amazon
+```
+
+Then update `config/storage.yml` with:
 
 ```yml
 amazon:
@@ -347,6 +355,15 @@ amazon:
   bucket: <%= ENV['S3_BUCKET'] %>
 ```
 
+##### Redis cache
+
+See [Rails documentation](https://guides.rubyonrails.org/caching_with_rails.html). 
+
+Set cache store to redis in `config/environments/production.rb`:
+
+```ruby
+config.cache_store = :redis_cache_store, { url: ENV['REDIS_URL'] }
+```
 
 ### Feedback
 
