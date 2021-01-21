@@ -31,7 +31,7 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
-1. [Help with Ruby on Rails apps](#ruby-on-rails-help)
+    1. [Ruby on Rails](#ruby-on-rails)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
@@ -297,7 +297,7 @@ the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/ex
 Additional experiments and test cases are located in
 the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/sandbox).
 
-### Ruby on Rails help
+### Ruby on Rails
 
 In this sections we collect helpful information for deploying Ruby on Rails applications. 
 
