@@ -133,10 +133,8 @@ console and configure SES.
 
 ### Using the Redis Cluster
 
-If you declare `REDIS_NODE_TYPE` with a value defined [here](https://aws.amazon.com/elasticache/pricing/), a Redis 
-cluster will be provisioned for your application. 
-
-Once provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT` and `REDIS_AVAILABILITY_ZONE` are made 
+A Redis Elasticache cluster will be provisioned for your application with REDIS_NODE_TYPE `cache.t2.micro`. Once
+provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT`, `REDIS_AVAILABILITY_ZONE` and `REDIS_URL` are made
 available to your webapp.
 
 ### Providing Custom Environment Variables to Webapp

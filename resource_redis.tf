@@ -26,18 +26,17 @@ resource "aws_security_group_rule" "allow_redis_access" {
 # Output
 
 output "redis_address" {
-  value = var.REDIS_NODE_TYPE != "" ? aws_elasticache_cluster.redis.0.cache_nodes.0.address : ""
+  value = aws_elasticache_cluster.redis.0.cache_nodes.0.address
 }
 
 output "redis_port" {
-  value = var.REDIS_NODE_TYPE != "" ? aws_elasticache_cluster.redis.0.port : ""
+  value = aws_elasticache_cluster.redis.0.port
 }
 
 output "redis_availability_zone" {
-  value = var.REDIS_NODE_TYPE != "" ? aws_elasticache_cluster.redis.0.availability_zone : ""
+  value = aws_elasticache_cluster.redis.0.availability_zone
 }
 
 output "redis_url" {
-  value = var.REDIS_NODE_TYPE != "" ? "redis://${aws_elasticache_cluster.redis.0.cache_nodes.0
-  .address}:${aws_elasticache_cluster.redis.0.port}" : ""
+  value = "redis://${aws_elasticache_cluster.redis.0.cache_nodes.0.address}:${aws_elasticache_cluster.redis.0.port}"
 }
