@@ -22,31 +22,35 @@ resource "aws_security_group" "Five_Minute_Security_Group" {
   description = "Five_Minute_VPC_Security_Group"
 
   ingress {
-    cidr_blocks = "0.0.0.0/0"
+    description = "ssh"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
     from_port = 22
     to_port = 22
-    protocol = "tcp"
   }
 
   ingress {
-    cidr_blocks = "0.0.0.0/0"
+    description = "http"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
     from_port = 80
     to_port = 80
-    protocol = "tcp"
   }
 
   ingress {
-    cidr_blocks = "0.0.0.0/0"
+    description = "https"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
     from_port = 443
     to_port = 443
-    protocol = "tcp"
   }
 
   egress {
-    from_port = 0
-    to_port = 0
+    description = "all outgoing"
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0
+    to_port = 0
   }
 
   tags = {
