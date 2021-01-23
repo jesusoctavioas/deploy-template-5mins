@@ -31,49 +31,11 @@ data "aws_ami" "ubuntu_20_04" {
   owners = ["099720109477"]
 }
 
-resource "aws_security_group" "five_minute_public" {
-  name = "five_minute_public_security_group_${var.ENVIRONMENT_NAME}"
-  description = "Publicly accessible security group"
-
-  ingress {
-    description = "SSH"
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTPS"
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTP"
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.common_tags
-}
-
 resource "aws_instance" "webapp" {
   ami = data.aws_ami.ubuntu_20_04.id
   instance_type = var.EC2_INSTANCE_TYPE
   key_name = aws_key_pair.key_pair.key_name
-  security_groups = [aws_security_group.five_minute_public.name]
+  security_groups = [aws_security_group.Five_Minute_Security_Group.name]
 
   tags = local.common_tags
 }
