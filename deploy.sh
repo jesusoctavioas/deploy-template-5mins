@@ -29,6 +29,7 @@ SMTP_PASSWORD=$(jq --raw-output ".smtp_password.value" tf_output.json)
 REDIS_ADDRESS=$(jq --raw-output ".redis_address.value" tf_output.json)
 REDIS_PORT=$(jq --raw-output ".redis_port.value" tf_output.json)
 REDIS_AVAILABILITY_ZONE=$(jq --raw-output ".redis_availability_zone.value" tf_output.json)
+REDIS_URL=$(jq --raw-output ".redis_url.value" tf_output.json)
 
 # extract GL_VARs
 printenv | grep GL_VAR_ >gl_vars_demp.txt                                   # get all env vars
@@ -111,6 +112,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e REDIS_ADDRESS=$REDIS_ADDRESS                                     \
         -e REDIS_PORT=$REDIS_PORT                                           \
         -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE                 \
+        -e REDIS_URL=$REDIS_URL                                             \
         $GL_VARs                                                            \
         -d                                                                  \
         -p 8000:$WEBAPP_PORT                                                \
@@ -149,6 +151,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 -e REDIS_ADDRESS=$REDIS_ADDRESS                             \
                 -e REDIS_PORT=$REDIS_PORT                                   \
                 -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE         \
+                -e REDIS_URL=$REDIS_URL                                     \
                 $GL_VARs                                                    \
                 -i                                                          \
                 container_webapp $DB_INITIALIZE
@@ -184,6 +187,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             -e REDIS_ADDRESS=$REDIS_ADDRESS                                 \
             -e REDIS_PORT=$REDIS_PORT                                       \
             -e REDIS_AVAILABILITY_ZONE=$REDIS_AVAILABILITY_ZONE             \
+            -e REDIS_URL=$REDIS_URL                                         \
             $GL_VARs                                                        \
             -i                                                              \
             container_webapp $DB_MIGRATE
@@ -201,8 +205,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# disable cert_domain if not protected branch or tag
+if [ "$CI_COMMIT_REF_PROTECTED" == "false" ]; then
+    unset CERT_DOMAIN
+fi
+
+# default to resolve.anyip.host
+FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.anyip.host}
+
 # determine domain
-CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.resolve.anyip.host}
+CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.$FALLBACK_DYNAMIC_DOMAIN}
 NGINX_CONF=$(cat conf.nginx)
 DYNAMIC_ENVIRONMENT_URL=https://$CERT_DOMAIN
 
@@ -266,3 +278,6 @@ if [ $? -ne 0 ]; then
   echo "🟥 Failed to start Nginx on EC2 instance"
   exit 1
 fi
+
+# publish url
+echo "🌏 $DYNAMIC_ENVIRONMENT_URL"

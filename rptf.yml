@@ -1,0 +1,47 @@
+aws_vars_missing:
+    trigger:
+        project_id: 22488569
+    assertions:
+        pipeline_status: success
+        job_count: 1
+        job_status:
+            build: success
+
+fail_db_init:
+    trigger:
+        project_id: 22975621
+        branch: fail-db-init
+    assertions:
+        pipeline_status: failed
+        job_count: 4
+        job_status:
+            build: success
+            terraform_apply: success
+            deploy: failed
+            terraform_destroy: skipped
+
+fail_db_migrate:
+    trigger:
+        project_id: 22975621
+        branch: fail-db-migrate
+    assertions:
+        pipeline_status: failed
+        job_count: 4
+        job_status:
+            build: success
+            terraform_apply: success
+            deploy: failed
+            terraform_destroy: skipped
+
+success:
+    trigger:
+        project_id: 22975621
+        branch: success
+    assertions:
+        pipeline_status: success
+        job_count: 3
+        job_status:
+            build: success
+            terraform_apply: success
+            deploy: success
+
