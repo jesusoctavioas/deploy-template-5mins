@@ -210,8 +210,8 @@ if [ "$CI_COMMIT_REF_PROTECTED" == "false" ]; then
     unset CERT_DOMAIN
 fi
 
-# default to resolve.anyip.host
-FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.anyip.host}
+# default to resolve.toip.host
+FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.toip.host}
 
 # determine domain
 CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.$FALLBACK_DYNAMIC_DOMAIN}

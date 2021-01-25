@@ -247,7 +247,7 @@ infrastructure even on protected branch.
 ### Enabling SSL
 
 - SSL is enabled for all environments
-- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.anyip.host`
+- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.toip.host`
 - For custom domain, define `CERT_DOMAIN` variable for your pipeline
   - This can be defined in `.gitlab-ci.yml` alongwith `CERT_EMAIL`
 
