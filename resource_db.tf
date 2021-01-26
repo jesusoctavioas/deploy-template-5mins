@@ -27,6 +27,7 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = false
 
   vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
+  db_subnet_group_name = aws_subnet.Five_Minute_Subnet
 
   tags = local.common_tags
 }

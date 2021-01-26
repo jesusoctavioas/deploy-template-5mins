@@ -6,6 +6,7 @@ resource "aws_elasticache_cluster" "redis" {
   num_cache_nodes = 1
   port = 6379
   security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
+  subnet_group_name = aws_subnet.Five_Minute_Subnet
 }
 
 # Output

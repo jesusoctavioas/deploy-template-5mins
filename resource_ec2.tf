@@ -37,6 +37,7 @@ resource "aws_instance" "webapp" {
   key_name = aws_key_pair.key_pair.key_name
 
   vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
+  subnet_id = aws_subnet.Five_Minute_Subnet.id
 
   tags = local.common_tags
 }
