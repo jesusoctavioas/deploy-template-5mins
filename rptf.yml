@@ -1,6 +1,7 @@
 aws_vars_missing:
     trigger:
         project_id: 22488569
+        branch: stable
     assertions:
         pipeline_status: success
         job_count: 1
@@ -10,7 +11,7 @@ aws_vars_missing:
 fail_db_init:
     trigger:
         project_id: 22975621
-        branch: fail-db-init
+        branch: stable-fail-db-init
     assertions:
         pipeline_status: failed
         job_count: 4
@@ -23,7 +24,7 @@ fail_db_init:
 fail_db_migrate:
     trigger:
         project_id: 22975621
-        branch: fail-db-migrate
+        branch: stable-fail-db-migrate
     assertions:
         pipeline_status: failed
         job_count: 4
@@ -36,7 +37,7 @@ fail_db_migrate:
 success:
     trigger:
         project_id: 22975621
-        branch: success
+        branch: stable-success
     assertions:
         pipeline_status: success
         job_count: 3
