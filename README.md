@@ -367,6 +367,24 @@ Set cache store to redis in `config/environments/production.rb`:
 config.cache_store = :redis_cache_store, { url: ENV['REDIS_URL'] }
 ```
 
+##### SMTP
+
+See [Rails documentation](https://guides.rubyonrails.org/action_mailer_basics.html#action-mailer-configuration). 
+
+To use Rails email delivery with provided AWS SES you need to provide smtp settings in `config/environments/production.rb`:
+
+```ruby
+config.action_mailer.delivery_method = :smtp
+config.action_mailer.default_options = {from: ENV['SMTP_FROM']}
+config.action_mailer.smtp_settings = {
+  address:              ENV['SMTP_HOST'],
+  port:                 587,
+  user_name:            ENV['SMTP_USER'],
+  password:             ENV['SMTP_PASSWORD'],
+  authentication:       'plain',
+  enable_starttls_auto: true }
+```
+
 ### Feedback
 
 This project is in early stage of development. And we are looking for your feedback. 
