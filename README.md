@@ -301,6 +301,8 @@ In this sections we collect helpful information for deploying Ruby on Rails appl
 
 ##### Master key
 
+See [Rails documentation](https://edgeguides.rubyonrails.org/security.html#custom-credentials). 
+
 Rails uses master key to decrypt `config/credentials.yml.enc`. Find your master key and set it as CI/CD variable `GL_VAR_RAILS_MASTER_KEY` in GitLab project settings. Otherwise deploy may fail. 
 
 ##### Database migrations
