@@ -307,6 +307,8 @@ Rails uses master key to decrypt `config/credentials.yml.enc`. Find your master 
 
 ##### Database migrations
 
+The command to migrate your database depends on whether you’re using a Docker file or Herokuish.
+
 If you have `Dockerfile` then add next line to `gitlab-ci.yml`:
 
 ```
