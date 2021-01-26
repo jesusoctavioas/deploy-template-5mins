@@ -24,7 +24,7 @@ resource "aws_db_instance" "postgres" {
   username = "user_${random_string.postgres_username.result}"
   password = random_password.postgres_password.result
   skip_final_snapshot = true
-  publicly_accessible = true
+  publicly_accessible = false
 
   vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
 

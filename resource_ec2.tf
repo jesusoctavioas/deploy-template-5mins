@@ -35,7 +35,8 @@ resource "aws_instance" "webapp" {
   ami = data.aws_ami.ubuntu_20_04.id
   instance_type = var.EC2_INSTANCE_TYPE
   key_name = aws_key_pair.key_pair.key_name
-  security_groups = [aws_security_group.Five_Minute_Security_Group.name]
+
+  vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
 
   tags = local.common_tags
 }
