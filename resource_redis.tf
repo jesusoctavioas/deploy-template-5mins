@@ -1,3 +1,8 @@
+resource "aws_elasticache_subnet_group" "redis_subnet" {
+  name = "redis-subnet-${var.SHORT_ENVIRONMENT_NAME}"
+  subnet_ids = [aws_subnet.Five_Minute_Subnet.id]
+}
+
 resource "aws_elasticache_cluster" "redis" {
   count = 1
   cluster_id = "redis-cluster-${var.SHORT_ENVIRONMENT_NAME}"
@@ -6,7 +11,7 @@ resource "aws_elasticache_cluster" "redis" {
   num_cache_nodes = 1
   port = 6379
   security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
-  subnet_group_name = aws_subnet.Five_Minute_Subnet
+  subnet_group_name = aws_elasticache_subnet_group.redis_subnet.name
 }
 
 # Output

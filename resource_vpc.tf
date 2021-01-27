@@ -16,6 +16,16 @@ resource "aws_subnet" "Five_Minute_Subnet" {
   }
 }
 
+resource "aws_subnet" "Five_Minute_Subnet_Secondary" {
+  vpc_id = aws_vpc.Five_Minute_VPC.id
+  cidr_block = "10.0.2.0/24"
+  map_public_ip_on_launch = true
+  availability_zone = var.SECONDARY_AVAILABILITY_ZONE
+  tags = {
+    Name = "Five_Minute_VPC_Subnet"
+  }
+}
+
 resource "aws_security_group" "Five_Minute_Security_Group" {
   vpc_id = aws_vpc.Five_Minute_VPC.id
   name = "Five_Minute_VPC_Security_Group"
@@ -59,90 +69,72 @@ resource "aws_security_group" "Five_Minute_Security_Group" {
   }
 }
 
-#resource "aws_network_acl" "Five_Minute_Security_Access_Control_List" {
-#  vpc_id = aws_vpc.Five_Minute_VPC.id
-#  subnet_ids = [aws_subnet.Five_Minute_Subnet.id]
-#
-#  ingress {
-#    protocol = "tcp"
-#    rule_no = 100
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 22
-#    to_port = 22
-#  }
-#
-#  egress {
-#    protocol = "tcp"
-#    rule_no = 100
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 22
-#    to_port = 22
-#  }
-#
-#  ingress {
-#    protocol = "tcp"
-#    rule_no = 200
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 80
-#    to_port = 80
-#  }
-#
-#  egress {
-#    protocol = "tcp"
-#    rule_no = 200
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 80
-#    to_port = 80
-#  }
-#
-#  ingress {
-#    protocol = "tcp"
-#    rule_no = 300
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 443
-#    to_port = 443
-#  }
-#
-#  egress {
-#    protocol = "tcp"
-#    rule_no = 300
-#    action = "allow"
-#    cidr_block = "0.0.0.0/0"
-#    from_port = 443
-#    to_port = 443
-#  }
-#
-#  tags = {
-#    Name = "Five_Minute_VPC_Access_Control_List"
-#  }
-#}
+resource "aws_network_acl" "Five_Minute_Security_Access_Control_List" {
+  vpc_id = aws_vpc.Five_Minute_VPC.id
+  subnet_ids = [aws_subnet.Five_Minute_Subnet.id]
 
-#resource "aws_internet_gateway" "Five_Minute_Internet_Gateway" {
-#  vpc_id = aws_vpc.Five_Minute_VPC.id
-#  tags = {
-#    Name = "Five_Minute_VPC_Internet_Gateway"
-#  }
-#}
+  ingress {
+    protocol = "tcp"
+    rule_no = 100
+    action = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port = 22
+    to_port = 22
+  }
 
-#resource "aws_route_table" "Five_Minute_Route_Table" {
-#  vpc_id = aws_vpc.Five_Minute_VPC.id
-#  tags = {
-#    Name = "My VPC Route Table"
-#  }
-#}
+  ingress {
+    protocol = "tcp"
+    rule_no = 200
+    action = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port = 80
+    to_port = 80
+  }
 
-#resource "aws_route" "Five_Minute_Internet_Access" {
-#  route_table_id = aws_route_table.Five_Minute_Route_Table.id
-#  destination_cidr_block = "0.0.0.0/0"
-#  gateway_id = aws_internet_gateway.Five_Minute_Internet_Gateway.id
-#}
+  ingress {
+    protocol = "tcp"
+    rule_no = 300
+    action = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port = 443
+    to_port = 443
+  }
 
-#resource "aws_route_table_association" "Five_Minute_Association" {
-#  subnet_id = aws_subnet.Five_Minute_Subnet.id
-#  route_table_id = aws_route_table.Five_Minute_Route_Table.id
-#}
+  egress {
+    protocol = "tcp"
+    rule_no = 100
+    action = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port = 0
+    to_port = 0
+  }
+
+  tags = {
+    Name = "Five_Minute_VPC_Access_Control_List"
+  }
+}
+
+resource "aws_internet_gateway" "Five_Minute_Internet_Gateway" {
+  vpc_id = aws_vpc.Five_Minute_VPC.id
+  tags = {
+    Name = "Five_Minute_VPC_Internet_Gateway"
+  }
+}
+
+resource "aws_route_table" "Five_Minute_Route_Table" {
+  vpc_id = aws_vpc.Five_Minute_VPC.id
+  tags = {
+    Name = "My VPC Route Table"
+  }
+}
+
+resource "aws_route" "Five_Minute_Internet_Access" {
+  route_table_id = aws_route_table.Five_Minute_Route_Table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.Five_Minute_Internet_Gateway.id
+}
+
+resource "aws_route_table_association" "Five_Minute_Association" {
+  subnet_id = aws_subnet.Five_Minute_Subnet.id
+  route_table_id = aws_route_table.Five_Minute_Route_Table.id
+}
