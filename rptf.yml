@@ -40,7 +40,7 @@ success:
         branch: stable-success
     assertions:
         pipeline_status: success
-        job_count: 4
+        job_count: 3
         job_status:
             build: success
             terraform_apply: success
