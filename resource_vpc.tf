@@ -7,10 +7,15 @@ resource "aws_vpc" "Five_Minute_VPC" {
   }
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 resource "aws_subnet" "Five_Minute_Subnet" {
   vpc_id = aws_vpc.Five_Minute_VPC.id
   cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
+  availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
     Name = "Five_Minute_VPC_Subnet"
   }
@@ -20,7 +25,7 @@ resource "aws_subnet" "Five_Minute_Subnet_Secondary" {
   vpc_id = aws_vpc.Five_Minute_VPC.id
   cidr_block = "10.0.2.0/24"
   map_public_ip_on_launch = true
-  availability_zone = var.SECONDARY_AVAILABILITY_ZONE
+  availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
     Name = "Five_Minute_VPC_Subnet"
   }

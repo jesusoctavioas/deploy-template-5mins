@@ -30,8 +30,3 @@ variable "REDIS_NODE_TYPE" {
   default = "cache.t2.micro"
   type = string
 }
-
-variable "SECONDARY_AVAILABILITY_ZONE" {
-  default = "us-east-2b"
-  type = string
-}
