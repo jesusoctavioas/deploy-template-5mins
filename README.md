@@ -7,6 +7,7 @@ Learn more about the vision:
 
 - [Direction](https://about.gitlab.com/direction/5-min-production/)
 - [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
+- [Meeting playlist](https://www.youtube.com/playlist?list=PL05JrBw4t0Krf0LZbfg80yo08DW1c3C36)
 
 This project is used for template development and roadmap management. The following sections explain
 the requirements and provide documentation to walk you through requirements, usage, customizations
