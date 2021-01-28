@@ -31,7 +31,6 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
-    1. [Ruby on Rails](#ruby-on-rails)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
@@ -267,12 +266,10 @@ We also collected helpful information on specific languages and frameworks:
 
 * [Ruby on Rails](RAILS.md)
 
-If you have experience with different language/framework, please contribute to the list above. 
+If you have experience with different language/framework, please contribute to the list above, 
+we especially welcome Node, Go, Spring, Django, and Phoenix examples.
+
 Simply create a file `NAME_OF_LANGUAGE_OR_FRAMEWORK.md` and put a link in the list.
-
-### Ruby on Rails
-
-We collected [a helpful information](RAILS.md) for deploying Ruby on Rails applications.
 
 ### Feedback
 
