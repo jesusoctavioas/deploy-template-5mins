@@ -32,9 +32,6 @@ resource "aws_db_instance" "postgres" {
   vpc_security_group_ids = [aws_security_group.security_group.id]
   db_subnet_group_name = aws_db_subnet_group.postgres_subnet.name
 
-  # todo must disable after network config
-  publicly_accessible = true
-
   tags = local.common_tags
 }
 
