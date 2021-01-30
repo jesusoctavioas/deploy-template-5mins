@@ -54,6 +54,22 @@ resource "aws_security_group" "security_group" {
     to_port = 443
   }
 
+  ingress {
+    description = "postgres"
+    protocol = "tcp"
+    cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24"]
+    from_port = 5432
+    to_port = 5432
+  }
+
+  ingress {
+    description = "redis"
+    protocol = "tcp"
+    cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24"]
+    from_port = 6379
+    to_port = 6379
+  }
+
   egress {
     description = "all outgoing"
     protocol = "-1"
