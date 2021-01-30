@@ -12,6 +12,7 @@ optional and exist to provide additional functionality or flexibility.
 | CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
 | DATABASE_URL | Generated postgresql credentials  | We generate it for you. |  | | Yes |
 | DATABASE_ENDPOINT | Generated postgresql host and port  | We generate it for you. |  | | Yes |
+| DATABASE_ADDRESS | Generated postgresql host  | We generate it for you. |  | | Yes |
 | DATABASE_USERNAME | Generated postgresql username  | We generate it for you. |  | | Yes |
 | DATABASE_PASSWORD | Generated postgresql password  | We generate it for you. |  | | Yes |
 | DATABASE_NAME | Generated postgresql db name  | We generate it for you. |  | | Yes |

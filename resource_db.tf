@@ -28,10 +28,12 @@ resource "aws_db_instance" "postgres" {
   username = "user_${random_string.postgres_username.result}"
   password = random_password.postgres_password.result
   skip_final_snapshot = true
-  publicly_accessible = false
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
   db_subnet_group_name = aws_db_subnet_group.postgres_subnet.name
+
+  # todo must disable after network config
+  publicly_accessible = true
 
   tags = local.common_tags
 }
@@ -46,6 +48,11 @@ output "database_url" {
 
 output "database_endpoint" {
   value = aws_db_instance.postgres.endpoint
+  sensitive = true
+}
+
+output "database_address" {
+  value = aws_db_instance.postgres.address
   sensitive = true
 }
 

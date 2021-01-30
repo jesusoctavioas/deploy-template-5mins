@@ -159,6 +159,7 @@ The following variables are provided to your containerized webapp. Thus are avai
 ```yaml
 - DATABASE_URL                  # postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}
 - DATABASE_ENDPOINT             # {db_host}:{db_port}
+- DATABASE_ADDRESS              # {db_host}
 - DATABASE_USERNAME             # {db_user}
 - DATABASE_PASSWORD             # {db_pass}
 - DATABASE_NAME                 # {db_name}
