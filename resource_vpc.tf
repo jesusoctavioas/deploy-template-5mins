@@ -65,71 +65,16 @@ resource "aws_security_group" "security_group" {
   tags = local.common_tags
 }
 
-resource "aws_network_acl" "access_control_list" {
-  vpc_id = aws_vpc.vpc.id
-  subnet_ids = [aws_subnet.subnet_primary.id]
-
-  ingress {
-    protocol = "tcp"
-    rule_no = 100
-    action = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port = 22
-    to_port = 22
-  }
-
-  ingress {
-    protocol = "tcp"
-    rule_no = 200
-    action = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port = 80
-    to_port = 80
-  }
-
-  ingress {
-    protocol = "tcp"
-    rule_no = 300
-    action = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port = 443
-    to_port = 443
-  }
-
-  egress {
-    protocol = "tcp"
-    rule_no = 100
-    action = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port = 0
-    to_port = 0
-  }
-
-  tags = local.common_tags
-}
-
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
   tags = local.common_tags
 }
 
-resource "aws_route_table" "route_table" {
-  vpc_id = aws_vpc.vpc.id
+resource "aws_default_route_table" "default_route_table" {
+  default_route_table_id = aws_vpc.vpc.default_route_table_id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.internet_gateway.id
   }
-
   tags = local.common_tags
-}
-
-resource "aws_route" "internet_access" {
-  route_table_id = aws_route_table.route_table.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.internet_gateway.id
-}
-
-resource "aws_route_table_association" "route_table_association" {
-  subnet_id = aws_subnet.subnet_primary.id
-  route_table_id = aws_route_table.route_table.id
 }
