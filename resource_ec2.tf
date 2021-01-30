@@ -36,8 +36,8 @@ resource "aws_instance" "webapp" {
   instance_type = var.EC2_INSTANCE_TYPE
   key_name = aws_key_pair.key_pair.key_name
 
-  vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
-  subnet_id = aws_subnet.Five_Minute_Subnet.id
+  vpc_security_group_ids = [aws_security_group.security_group.id]
+  subnet_id = aws_subnet.subnet_primary.id
 
   tags = local.common_tags
 }

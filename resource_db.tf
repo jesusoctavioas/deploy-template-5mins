@@ -16,7 +16,7 @@ resource "random_password" "postgres_password" {
 }
 
 resource "aws_db_subnet_group" "postgres_subnet" {
-  subnet_ids = [aws_subnet.Five_Minute_Subnet.id, aws_subnet.Five_Minute_Subnet_Secondary.id]
+  subnet_ids = [aws_subnet.subnet_primary.id, aws_subnet.subnet_secondary.id]
 }
 
 resource "aws_db_instance" "postgres" {
@@ -30,7 +30,7 @@ resource "aws_db_instance" "postgres" {
   skip_final_snapshot = true
   publicly_accessible = false
 
-  vpc_security_group_ids = [aws_security_group.Five_Minute_Security_Group.id]
+  vpc_security_group_ids = [aws_security_group.security_group.id]
   db_subnet_group_name = aws_db_subnet_group.postgres_subnet.name
 
   tags = local.common_tags

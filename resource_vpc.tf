@@ -1,40 +1,34 @@
-resource "aws_vpc" "Five_Minute_VPC" {
+resource "aws_vpc" "vpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
   enable_dns_hostnames = true
-  tags = {
-    Name = "Five_Minute_VPC"
-  }
+  tags = local.common_tags
 }
 
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_subnet" "Five_Minute_Subnet" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
+resource "aws_subnet" "subnet_primary" {
+  vpc_id = aws_vpc.vpc.id
   cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone = data.aws_availability_zones.available.names[0]
-  tags = {
-    Name = "Five_Minute_VPC_Subnet"
-  }
+  tags = local.common_tags
 }
 
-resource "aws_subnet" "Five_Minute_Subnet_Secondary" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
+resource "aws_subnet" "subnet_secondary" {
+  vpc_id = aws_vpc.vpc.id
   cidr_block = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = "Five_Minute_VPC_Subnet"
-  }
+  tags = local.common_tags
 }
 
-resource "aws_security_group" "Five_Minute_Security_Group" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
-  name = "Five_Minute_VPC_Security_Group"
-  description = "Five_Minute_VPC_Security_Group"
+resource "aws_security_group" "security_group" {
+  name = var.SHORT_ENVIRONMENT_NAME
+  description = var.ENVIRONMENT_NAME
+  vpc_id = aws_vpc.vpc.id
 
   ingress {
     description = "ssh"
@@ -68,15 +62,12 @@ resource "aws_security_group" "Five_Minute_Security_Group" {
     to_port = 0
   }
 
-  tags = {
-    Name = "Five_Minute_VPC_Security_Group"
-    Description = "Five_Minute_VPC_Security_Group"
-  }
+  tags = local.common_tags
 }
 
-resource "aws_network_acl" "Five_Minute_Security_Access_Control_List" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
-  subnet_ids = [aws_subnet.Five_Minute_Subnet.id]
+resource "aws_network_acl" "access_control_list" {
+  vpc_id = aws_vpc.vpc.id
+  subnet_ids = [aws_subnet.subnet_primary.id]
 
   ingress {
     protocol = "tcp"
@@ -114,32 +105,31 @@ resource "aws_network_acl" "Five_Minute_Security_Access_Control_List" {
     to_port = 0
   }
 
-  tags = {
-    Name = "Five_Minute_VPC_Access_Control_List"
-  }
+  tags = local.common_tags
 }
 
-resource "aws_internet_gateway" "Five_Minute_Internet_Gateway" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
-  tags = {
-    Name = "Five_Minute_VPC_Internet_Gateway"
-  }
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.vpc.id
+  tags = local.common_tags
 }
 
-resource "aws_route_table" "Five_Minute_Route_Table" {
-  vpc_id = aws_vpc.Five_Minute_VPC.id
-  tags = {
-    Name = "My VPC Route Table"
+resource "aws_route_table" "route_table" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
   }
+
+  tags = local.common_tags
 }
 
-resource "aws_route" "Five_Minute_Internet_Access" {
-  route_table_id = aws_route_table.Five_Minute_Route_Table.id
+resource "aws_route" "internet_access" {
+  route_table_id = aws_route_table.route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.Five_Minute_Internet_Gateway.id
+  gateway_id = aws_internet_gateway.internet_gateway.id
 }
 
-resource "aws_route_table_association" "Five_Minute_Association" {
-  subnet_id = aws_subnet.Five_Minute_Subnet.id
-  route_table_id = aws_route_table.Five_Minute_Route_Table.id
+resource "aws_route_table_association" "route_table_association" {
+  subnet_id = aws_subnet.subnet_primary.id
+  route_table_id = aws_route_table.route_table.id
 }
