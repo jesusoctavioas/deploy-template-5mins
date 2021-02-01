@@ -1,17 +1,51 @@
-# Deploy Template for 5 Minute Production App
+# The 5 Minute Production App
 
-The 5 minute production app is about deployments being so easy that you need only 5 minutes to
-figure it out and make it happen.
+**Quickly** make a **stateful** app that is deployed on a **hypercloud**.
 
-Learn more about the vision:
+### Quickly
 
-- [Direction](https://about.gitlab.com/direction/5-min-production/)
+If you have written an application you should be able to deploy it within minutes with the 5-minute production app.
+Many other platforms are also quick, for example Heroku. 
+But configuring Heroku for a production application that needs statefulness (remembering users and data accross deploys) is a much longer process.
+And Heroku doesn't let you deploy on a hypercloud, which has [many advantages](#hypercloud).
+
+### Stateful
+
+The 5 minute production app uses the managed stateful services of a hypercloud so your data is persisted and secure.
+By leveraging these managed services (dadatabases, caching, objects storage, etc.) you have less to maintain.
+Everything is provisioned through Terraform which has the following advanatges:
+
+1. Terraform is the most propular
+1. Terraform works accross platforms
+1. Terraform is easy to understand
+1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state)
+1. You avoid the cost and complexity of Kubernetes
+1. You have complete controle to customize and extend.
+
+### Hypercloud
+
+Most people working in organizations use the three western hyper clouds (AWS, Azure, GCP) because: 
+
+1. They have a wide selection of managed stateful services (databases, caching, object storage, etc.)
+1. At least a one is probably already approved to be used in your organization.
+1. At least one is probably already budgeted for.
+1. They have a free tier which the 5 minute production app runs within.
+1. They are familiar to other people in your team and organization.
+1. They are reliable and secure.
+1. They are quickly innovating (machines with ARM processors, GPUs, TPUs, etc.)
+1. They have lower prices than services such as Heroku.
+1. They allow applications room to grow, no need to move from Heroku to AWS when it becomes popular.
+
+### Roadmap
+
+You're looking at the primary project for the 5 minute production app.
+The roadmap in [its issue board](https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/boards)
+
+### Vision
+
+- [Category direction](https://about.gitlab.com/direction/5-min-production/)
 - [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
 - [Meeting playlist](https://www.youtube.com/playlist?list=PL05JrBw4t0Krf0LZbfg80yo08DW1c3C36)
-
-This project is used for template development and roadmap management. The following sections explain
-the requirements and provide documentation to walk you through requirements, usage, customizations
-and more examples.
 
 ### Table of Contents
 
