@@ -15,19 +15,19 @@ The 5 minute production app uses the managed stateful services of a hypercloud s
 By leveraging these managed services (dadatabases, caching, objects storage, etc.) you have less to maintain.
 Everything is provisioned through Terraform which has the following advanatges:
 
-1. Terraform is the most propular
+1. Terraform is the most popular
 1. Terraform works accross platforms
 1. Terraform is easy to understand
 1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state)
 1. You avoid the cost and complexity of Kubernetes
-1. You have complete controle to customize and extend.
+1. You have complete control to customize and extend.
 
 ### Hypercloud
 
 Most people working in organizations use the three western hyper clouds (AWS, Azure, GCP) because: 
 
 1. They have a wide selection of managed stateful services (databases, caching, object storage, etc.)
-1. At least a one is probably already approved to be used in your organization.
+1. At least one is probably already approved to be used in your organization.
 1. At least one is probably already budgeted for.
 1. They have a free tier which the 5 minute production app runs within.
 1. They are familiar to other people in your team and organization.
