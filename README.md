@@ -162,8 +162,8 @@ You will need to use your AWS credentials in addition to the S3 Bucket name for 
 AWS SES provides SMTP service. This service is made available to your webapp if you declare the `SMTP_FROM` variable.
 
 `SMTP_FROM` is an email address that is the sender of emails by your webapp. AWS SES will require this email to be 
-verified.  In sandbox mode, the recipient emails also need to be verified.  To turn off sandbox mode, please log in to your AWS 
-console and configure SES.
+verified. In sandbox mode, the recipient emails also need to be verified. To turn off sandbox mode, please log in to your AWS 
+console and configure SES. Read more at [Amazon Simple Email Service documentation](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html).
 
 ### Using the Redis Cluster
 
