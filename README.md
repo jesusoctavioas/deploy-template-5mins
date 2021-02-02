@@ -255,6 +255,7 @@ variables:
   TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
   TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
   TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
+  TF_VAR_DISABLE_POSTGRES: false
 
   # ssl certificates
   CERT_DOMAIN: 'my-domain.com'
@@ -265,6 +266,7 @@ variables:
 
   # redis
   TF_VAR_REDIS_NODE_TYPE: 'cache.t2.micro'
+  TF_VAR_DISABLE_REDIS: false
 
   # pass custom variables to webapp
   GL_VAR_HELLO: World

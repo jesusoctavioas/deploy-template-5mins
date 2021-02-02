@@ -30,3 +30,13 @@ variable "REDIS_NODE_TYPE" {
   default = "cache.t2.micro"
   type = string
 }
+
+variable "DISABLE_POSTGRES" {
+  default = false
+  type = bool
+}
+
+variable "DISABLE_REDIS" {
+  default = false
+  type = bool
+}
