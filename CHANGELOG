@@ -1,3 +1,9 @@
+3.0.0
+- Enable redis by default
+- ENV flag to disable redis and postgres when necessary
+- Refactor routing
+- Use new VPS instead of a default one
+
 2.4.0
 - Redis support
 - Disable CERT_DOMAIN on unprotected branches
