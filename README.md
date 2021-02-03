@@ -1,16 +1,51 @@
-# Deploy Template for 5 Minute Production App
+# The 5 Minute Production App
 
-The 5 minute production app is about deployments being so easy that you need only 5 minutes to
-figure it out and make it happen.
+**Quickly** make a **stateful** app that is deployed on a **hypercloud**.
 
-Learn more about the vision:
+### Quickly
 
-- [Direction](https://about.gitlab.com/direction/5-min-production/)
+If you have written an application you should be able to deploy it within minutes with the 5-minute production app.
+Many other platforms are also quick, for example Heroku. 
+But configuring Heroku for a production application that needs statefulness (remembering users and data accross deploys) is a much longer process.
+And Heroku doesn't let you deploy on a hypercloud, which has [many advantages](#hypercloud).
+
+### Stateful
+
+The 5 minute production app uses the managed stateful services of a hypercloud so your data is persisted and secure.
+By leveraging these managed services (dadatabases, caching, objects storage, etc.) you have less to maintain.
+Everything is provisioned through Terraform which has the following advanatges:
+
+1. Terraform is the most popular
+1. Terraform works accross platforms
+1. Terraform is easy to understand
+1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state)
+1. You avoid the cost and complexity of Kubernetes
+1. You have complete control to customize and extend.
+
+### Hypercloud
+
+Most people working in organizations use the three western hyper clouds (AWS, Azure, GCP) because: 
+
+1. They have a wide selection of managed stateful services (databases, caching, object storage, etc.)
+1. At least one is probably already approved to be used in your organization.
+1. At least one is probably already budgeted for.
+1. They have a free tier which the 5 minute production app runs within.
+1. They are familiar to other people in your team and organization.
+1. They are reliable and secure.
+1. They are quickly innovating (machines with ARM processors, GPUs, TPUs, etc.)
+1. They have lower prices than services such as Heroku.
+1. They allow applications room to grow, no need to move from Heroku to AWS when it becomes popular.
+
+### Roadmap
+
+You're looking at the primary project for the 5 minute production app.
+The roadmap in [its issue board](https://gitlab.com/gitlab-org/5-minute-production-app/deploy-template/-/boards)
+
+### Vision
+
+- [Category direction](https://about.gitlab.com/direction/5-min-production/)
 - [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
-
-This project is used for template development and roadmap management. The following sections explain
-the requirements and provide documentation to walk you through requirements, usage, customizations
-and more examples.
+- [Meeting playlist](https://www.youtube.com/playlist?list=PL05JrBw4t0Krf0LZbfg80yo08DW1c3C36)
 
 ### Table of Contents
 
@@ -31,7 +66,6 @@ and more examples.
 1. [Enabling SSL](#enabling-ssl)
 1. [Variables](#variables)
 1. [Examples](#examples)
-    1. [Ruby on Rails](#ruby-on-rails)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
 
@@ -128,15 +162,13 @@ You will need to use your AWS credentials in addition to the S3 Bucket name for 
 AWS SES provides SMTP service. This service is made available to your webapp if you declare the `SMTP_FROM` variable.
 
 `SMTP_FROM` is an email address that is the sender of emails by your webapp. AWS SES will require this email to be 
-verified.  In sandbox mode, the recipient emails also need to be verified.  To turn off sandbox mode, please log in to your AWS 
-console and configure SES.
+verified. In sandbox mode, the recipient emails also need to be verified. To turn off sandbox mode, please log in to your AWS 
+console and configure SES. Read more at [Amazon Simple Email Service documentation](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html).
 
 ### Using the Redis Cluster
 
-If you declare `REDIS_NODE_TYPE` with a value defined [here](https://aws.amazon.com/elasticache/pricing/), a Redis 
-cluster will be provisioned for your application. 
-
-Once provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT` and `REDIS_AVAILABILITY_ZONE` are made 
+A Redis Elasticache cluster will be provisioned for your application with REDIS_NODE_TYPE `cache.t2.micro`. Once
+provisioned, the environment variables `REDIS_ADDRESS`, `REDIS_PORT`, `REDIS_AVAILABILITY_ZONE` and `REDIS_URL` are made
 available to your webapp.
 
 ### Providing Custom Environment Variables to Webapp
@@ -161,6 +193,7 @@ The following variables are provided to your containerized webapp. Thus are avai
 ```yaml
 - DATABASE_URL                  # postgres://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}
 - DATABASE_ENDPOINT             # {db_host}:{db_port}
+- DATABASE_ADDRESS              # {db_host}
 - DATABASE_USERNAME             # {db_user}
 - DATABASE_PASSWORD             # {db_pass}
 - DATABASE_NAME                 # {db_name}
@@ -222,6 +255,7 @@ variables:
   TF_VAR_EC2_INSTANCE_TYPE: "t2.micro"           # free tier
   TF_VAR_PG_INSTANCE_CLASS: "db.t2.micro"  # free tier
   TF_VAR_PG_ALLOCATED_STORAGE: 20          # 20gb
+  TF_VAR_DISABLE_POSTGRES: "false"
 
   # ssl certificates
   CERT_DOMAIN: 'my-domain.com'
@@ -231,7 +265,8 @@ variables:
   SMTP_FROM: 'notifications@my-company.com'
 
   # redis
-  REDIS_NODE_TYPE: 'cache.t2.micro'
+  TF_VAR_REDIS_NODE_TYPE: 'cache.t2.micro'
+  TF_VAR_DISABLE_REDIS: "false"
 
   # pass custom variables to webapp
   GL_VAR_HELLO: World
@@ -249,45 +284,13 @@ infrastructure even on protected branch.
 ### Enabling SSL
 
 - SSL is enabled for all environments
-- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.anyip.host`
+- By default, the URL structure is `https://{branch-or-tag}.{public-ip}.resolve.toip.host`
 - For custom domain, define `CERT_DOMAIN` variable for your pipeline
   - This can be defined in `.gitlab-ci.yml` alongwith `CERT_EMAIL`
 
 ### Variables
 
-Below is the list of all variables this project uses. Some of them are required, the rest is
-optional and exist to provide additional functionality or flexibility.
-
-| Variable      | Description | Example value | Required |  Pipeline variable | Webapp variable |
-| ------------- | ----------- | -------- | ------------- | ------------------ | --------------- |
-| AWS_ACCESS_KEY_ID | Your AWS security credentials  | `AKIAIOSFODNN7EXAMPLE` | Required | Yes | Yes |
-| AWS_SECRET_ACCESS_KEY | Your AWS security credentials  |  `wJalrXUtnFEMI /K7MDENG /bPxRfiCYEXAMPLEKEY` | Required | Yes | Yes |
-| AWS_DEFAULT_REGION | Your AWS region  | `us-west-2` | Required | Yes | Yes |
-| CERT_EMAIL | HTTPS Your email to generate ssl certificate.  | `dz@example.com` | | Yes | |
-| CERT_DOMAIN | HTTPS Domain name for your app.  | `example.com` |  | | Yes |
-| DATABASE_URL | Generated postgresql credentials  | We generate it for you. |  | | Yes |
-| DATABASE_ENDPOINT | Generated postgresql host and port  | We generate it for you. |  | | Yes |
-| DATABASE_USERNAME | Generated postgresql username  | We generate it for you. |  | | Yes |
-| DATABASE_PASSWORD | Generated postgresql password  | We generate it for you. |  | | Yes |
-| DATABASE_NAME | Generated postgresql db name  | We generate it for you. |  | | Yes |
-| DB_INITIALIZE | This command will be executed once after deployment. | `bin/rake db:setup RAILS_ENV=production` |  | Yes | |
-| DB_MIGRATE | This command will be executed after each deployment. | `bin/rake db:migrate RAILS_ENV=production` |  | Yes | |
-| S3_BUCKET | S3 environment specific bucket name. | We generate it for you. |  | | Yes |
-| S3_BUCKET_DOMAIN | S3 publicly accessible domain. | We generate it for you. |  | | Yes |
-| S3_BUCKET_REGIONAL_DOMAIN | S3 publicly accessible regional domain. | We generate it for you. |  | | Yes |
-| TF_VAR_EC2_INSTANCE_TYPE | EC2 instance size. Your app will run on it  | `t2.micro` |  | Yes | |
-| TF_VAR_PG_INSTANCE_CLASS | Database instance size  | `db.t2.micro` |  | Yes | |
-| TF_VAR_PG_ALLOCATED_STORAGE | Database storage size  | `20gb` |  | Yes | |
-| WEBAPP_PORT | Your application port according to the Dockerfile   | `5000` |  | Yes | |
-| SMTP_HOST | AWS SES SMTP server, region specific   | We generate it for you. |  | | Yes |
-| SMTP_FROM | AWS SES validated from email address   | `notifications@my-company.com` | | Yes | Yes |
-| SMTP_USER | SMTP user name   | We generate it for you. | | | Yes |
-| SMTP_PASSWORD | SMTP password   | We generate it for you. | | | Yes |
-| REDIS_NODE_TYPE | Size of the Redis node, possible values [aws.amazon.com/elasticache/pricing](https://aws.amazon.com/elasticache/pricing/) If undefined, Redis / Elasticache is not provisioned | `cache.t2.micro` | | Yes | |
-| REDIS_ADDRESS | Address of your Redis cluster | We generate it for you. | | | Yes |
-| REDIS_PORT | Port of your Redis cluster | We generate it for you. | | | Yes |
-| REDIS_AVAILABILITY_ZONE | Availability zone of your Redis cluster | We generate it for you. | | | Yes |
-| REDIS_URL | Hostname and port of Redis separated by `:` | We generate it for you. | | | Yes |
+You can find a list of all variables this project uses [here](VARIABLES.md)
 
 ### Examples
 
@@ -297,73 +300,14 @@ the [examples subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/ex
 Additional experiments and test cases are located in
 the [sandbox subgroup](https://gitlab.com/gitlab-org/5-minute-production-app/sandbox).
 
-### Ruby on Rails
+We also collected helpful information on specific languages and frameworks:
 
-In this sections we collect helpful information for deploying Ruby on Rails applications. 
+* [Ruby on Rails](RAILS.md)
 
-##### Master key
+If you have experience with different language/framework, please contribute to the list above, 
+we especially welcome Node, Go, Spring, Django, and Phoenix examples.
 
-Rails uses master key to decrypt `config/credentials.yml.enc`. Find your master key and set it as CI/CD variable `GL_VAR_RAILS_MASTER_KEY` in GitLab project settings. Otherwise deploy may fail. 
-
-##### Database migrations
-
-If you have `Dockerfile` then add next line to `gitlab-ci.yml`:
-
-```
-variables:
-  # executed after every deployment
-  DB_MIGRATE: "bundle exec rake db:migrate RAILS_ENV=production"
-```
-
-If you don't have a `Dockerfile`, your container is build with herokuish. So database migration command will be different: 
-
-```
-variables:
-    DB_MIGRATE: "/bin/herokuish procfile exec bin/rails db:migrate RAILS_ENV=production"
-```
-
-##### Production environment
-
-For production environment add next line to `gitlab-ci.yml`:
-
-```
-variables:
-    # Rails env production
-    GL_VAR_RAILS_ENV: "production"
-```
-
-Make sure you have your assets precompiled or `config.assets.compile = true` in `config/environments/production.rb`.
-
-##### Active Storage
-
-See [Rails documentation](https://edgeguides.rubyonrails.org/active_storage_overview.html). 
-
-Set active storage to amazon in `config/environments/production.rb`:
-
-```ruby
-config.active_storage.service = :amazon
-```
-
-Then update `config/storage.yml` with:
-
-```yml
-amazon:
-  service: S3
-  access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
-  secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-  region: <%= ENV['AWS_DEFAULT_REGION'] %>
-  bucket: <%= ENV['S3_BUCKET'] %>
-```
-
-##### Redis cache
-
-See [Rails documentation](https://guides.rubyonrails.org/caching_with_rails.html). 
-
-Set cache store to redis in `config/environments/production.rb`:
-
-```ruby
-config.cache_store = :redis_cache_store, { url: ENV['REDIS_URL'] }
-```
+Simply create a file `NAME_OF_LANGUAGE_OR_FRAMEWORK.md` and put a link in the list.
 
 ### Feedback
 

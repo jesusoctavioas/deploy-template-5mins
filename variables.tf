@@ -27,6 +27,16 @@ variable "SMTP_FROM" {
 }
 
 variable "REDIS_NODE_TYPE" {
-  default = ""
+  default = "cache.t2.micro"
+  type = string
+}
+
+variable "DISABLE_POSTGRES" {
+  default = "false"
+  type = string
+}
+
+variable "DISABLE_REDIS" {
+  default = "false"
   type = string
 }

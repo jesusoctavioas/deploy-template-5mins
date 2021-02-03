@@ -11,6 +11,7 @@ WEBAPP_PORT=${WEBAPP_PORT:-5000}
 # database variables
 DATABASE_URL=$(jq --raw-output ".database_url.value" tf_output.json)
 DATABASE_ENDPOINT=$(jq --raw-output ".database_endpoint.value" tf_output.json)
+DATABASE_ADDRESS=$(jq --raw-output ".database_address.value" tf_output.json)
 DATABASE_USERNAME=$(jq --raw-output ".database_username.value" tf_output.json)
 DATABASE_PASSWORD=$(jq --raw-output ".database_password.value" tf_output.json)
 DATABASE_NAME=$(jq --raw-output ".database_name.value" tf_output.json)
@@ -98,6 +99,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY                     \
         -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                           \
         -e DATABASE_URL=$DATABASE_URL                                       \
+        -e DATABASE_ADDRESS=$DATABASE_ADDRESS                               \
         -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                             \
         -e DATABASE_USERNAME=$DATABASE_USERNAME                             \
         -e DATABASE_PASSWORD=$DATABASE_PASSWORD                             \
@@ -138,6 +140,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
                 -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                   \
                 -e DATABASE_URL=$DATABASE_URL                               \
                 -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                     \
+                -e DATABASE_ADDRESS=$DATABASE_ADDRESS                       \
                 -e DATABASE_USERNAME=$DATABASE_USERNAME                     \
                 -e DATABASE_PASSWORD=$DATABASE_PASSWORD                     \
                 -e DATABASE_NAME=$DATABASE_NAME                             \
@@ -174,6 +177,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i private_key.p
             -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION                       \
             -e DATABASE_URL=$DATABASE_URL                                   \
             -e DATABASE_ENDPOINT=$DATABASE_ENDPOINT                         \
+            -e DATABASE_ADDRESS=$DATABASE_ADDRESS                           \
             -e DATABASE_USERNAME=$DATABASE_USERNAME                         \
             -e DATABASE_PASSWORD=$DATABASE_PASSWORD                         \
             -e DATABASE_NAME=$DATABASE_NAME                                 \
@@ -210,8 +214,8 @@ if [ "$CI_COMMIT_REF_PROTECTED" == "false" ]; then
     unset CERT_DOMAIN
 fi
 
-# default to resolve.anyip.host
-FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.anyip.host}
+# default to resolve.toip.host
+FALLBACK_DYNAMIC_DOMAIN=${FALLBACK_DYNAMIC_DOMAIN:-resolve.toip.host}
 
 # determine domain
 CERT_DOMAIN=${CERT_DOMAIN:-$CI_COMMIT_REF_SLUG.$PUBLIC_IP.$FALLBACK_DYNAMIC_DOMAIN}

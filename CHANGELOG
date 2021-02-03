@@ -1,3 +1,15 @@
+3.0.0
+- Enable redis by default
+- ENV flag to disable redis and postgres when necessary
+- Refactor routing
+- Use new VPS instead of a default one
+
+2.4.0
+- Redis support
+- Disable CERT_DOMAIN on unprotected branches
+- Add FALLBACK_DYNAMIC_DOMAIN variable
+- Switch to GitLab managed wildcard dns host
+
 2.3.0
 - CERT_EMAIL variable is not required anymore. 
 - Service desk email used by default for SSL
