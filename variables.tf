@@ -32,11 +32,11 @@ variable "REDIS_NODE_TYPE" {
 }
 
 variable "DISABLE_POSTGRES" {
-  default = false
-  type = bool
+  default = "false"
+  type = string
 }
 
 variable "DISABLE_REDIS" {
-  default = false
-  type = bool
+  default = "false"
+  type = string
 }

@@ -20,7 +20,7 @@ resource "aws_db_subnet_group" "postgres_subnet" {
 }
 
 resource "aws_db_instance" "postgres" {
-  count = var.DISABLE_POSTGRES == true ? 0 : 1
+  count = var.DISABLE_POSTGRES == "true" ? 0 : 1
   apply_immediately = true
   allocated_storage = var.PG_ALLOCATED_STORAGE
   engine = "postgres"
@@ -39,32 +39,32 @@ resource "aws_db_instance" "postgres" {
 # Output
 
 output "database_url" {
-  value = var.DISABLE_POSTGRES == true ? null : "postgres://${aws_db_instance.postgres[0].username}:${aws_db_instance.postgres[0]
+  value = var.DISABLE_POSTGRES == "true" ? null : "postgres://${aws_db_instance.postgres[0].username}:${aws_db_instance.postgres[0]
   .password}@${aws_db_instance.postgres[0].endpoint}/${aws_db_instance.postgres[0].name}"
   sensitive = true
 }
 
 output "database_endpoint" {
-  value = var.DISABLE_POSTGRES == true ? null : aws_db_instance.postgres[0].endpoint
+  value = var.DISABLE_POSTGRES == "true" ? null : aws_db_instance.postgres[0].endpoint
   sensitive = true
 }
 
 output "database_address" {
-  value = var.DISABLE_POSTGRES == true ? null : aws_db_instance.postgres[0].address
+  value = var.DISABLE_POSTGRES == "true" ? null : aws_db_instance.postgres[0].address
   sensitive = true
 }
 
 output "database_username" {
-  value = var.DISABLE_POSTGRES == true ? null : aws_db_instance.postgres[0].username
+  value = var.DISABLE_POSTGRES == "true" ? null : aws_db_instance.postgres[0].username
   sensitive = true
 }
 
 output "database_password" {
-  value = var.DISABLE_POSTGRES == true ? null : aws_db_instance.postgres[0].password
+  value = var.DISABLE_POSTGRES == "true" ? null : aws_db_instance.postgres[0].password
   sensitive = true
 }
 
 output "database_name" {
-  value = var.DISABLE_POSTGRES == true ? null : aws_db_instance.postgres[0].name
+  value = var.DISABLE_POSTGRES == "true" ? null : aws_db_instance.postgres[0].name
   sensitive = true
 }
