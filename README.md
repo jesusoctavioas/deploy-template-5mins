@@ -41,11 +41,11 @@ Most people working in organizations use the three western hyper clouds (AWS, Az
 1. [Auto DevOps](https://about.gitlab.com/stages-devops-lifecycle/auto-devops/) provides point-and-click default CI/CD templates that auto-discover your source code to detect, build, test, deploy, and monitor your applications automatically.
 1. Auto DevOps is already [quick and easy to get started with](https://docs.gitlab.com/ee/topics/autodevops/#quick-start) by default
 1. Auto DevOps is stateless, however, the 5 minute production app is stateful.
-1. Auto DevOps uses Kubernetes, which you can use on hyper cloud but only the 5 minute  production app has:
-   1. Use managed stateful services (databases, caching, object storage, etc.) by default
+1. Auto DevOps uses Kubernetes, which you can use on hyper cloud but only the 5 minute production app gives you:
+   1. The ability to use managed stateful services (databases, caching, object storage, etc.) by default
    1. A free tier which the 5 minute production app runs within. Kubernetes isn't part of a free tier for any hyper cloud.
 1. Also, no Kubernetes overhead reduces cost and makes it simpler to run.
-1. The goal is to eventually combine Auto DevOps and the 5 minute production app so that [everyone can contribute](link) using Auto DevOps in production more easily.
+1. The goal is to eventually combine Auto DevOps and the 5 minute production app so that [everyone can contribute](https://about.gitlab.com/company/strategy/#everyone-can-contribute) using Auto DevOps in production more easily.
 
 
 ### Roadmap
