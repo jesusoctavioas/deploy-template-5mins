@@ -36,6 +36,18 @@ Most people working in organizations use the three western hyper clouds (AWS, Az
 1. They have lower prices than services such as Heroku.
 1. They allow applications room to grow, no need to move from Heroku to AWS when it becomes popular.
 
+### Relation to Auto DevOps
+
+1. _Description to add_ [placeholder]
+1. Auto DevOps is already [quick](link) by default
+1. Auto DevOps isn't stateful while the 5 minute production app is [stateful](link)
+1. Auto DevOps uses Kubernetes, which you can use on hyper cloud but only the 5 minute  production app has:
+   1. Use managed stateful services (databases, caching, object storage, etc.) by default
+   1. A free tier which the 5 minute production app runs within. Kubernetes isn't part of a free tier for any hyper cloud.
+1. Also, no Kubernetes overhead reduces cost and makes it simpler to run.
+1. The goal is to eventually combine Auto DevOps and the 5 minute production app so that [everyone can contribute](link) using Auto DevOps in production more easily.
+
+
 ### Roadmap
 
 You're looking at the primary project for the 5 minute production app.
