@@ -60,7 +60,6 @@ The roadmap in [its issue board](https://gitlab.com/gitlab-org/5-minute-producti
 1. [Providing Custom Environment Variables to Webapp](#providing-custom-environment-variables-to-webapp)
 1. [Variables Provided to Webapp](#variables-exposed-to-webapp)
 1. [Rollback Deployments](#rollback-deployments)
-1. [Customizing the Port](#customizing-the-port)
 1. [Configure Infra Resources](#configure-infra-resources)
 1. [List of All Configuration Variables](#list-of-all-configuration-variables)
 1. [Custom domain](#custom-domain)
