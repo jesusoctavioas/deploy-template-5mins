@@ -30,6 +30,9 @@ resource "aws_db_instance" "postgres" {
   password = random_password.postgres_password.result
   skip_final_snapshot = true
 
+  backup_retention_period = 7
+  delete_automated_backups = false
+
   vpc_security_group_ids = [aws_security_group.security_group.id]
   db_subnet_group_name = aws_db_subnet_group.postgres_subnet.name
 
