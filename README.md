@@ -59,6 +59,11 @@ The roadmap in [its issue board](https://gitlab.com/gitlab-org/5-minute-producti
 - [Blog: A journey from the first code to CI/CD deployments in 5 minutes?](https://about.gitlab.com/blog/2020/12/15/first-code-to-ci-cd-deployments-in-5-minutes/)
 - [Meeting playlist](https://www.youtube.com/playlist?list=PL05JrBw4t0Krf0LZbfg80yo08DW1c3C36)
 
+#### Usage Charts
+
+You may use the [5 Minute Production Application Sisense Dashboard](https://app.periscopedata.com/shared/b0987d39-f197-47ca-b830-edd9ea14d2fe) to see the usage for the Sisense.
+
+
 ### Table of Contents
 
 1. [Prerequisites](#prerequisites)
