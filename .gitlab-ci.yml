@@ -12,3 +12,6 @@ rptf:
     - pip install rptf
   script:
     - rptf
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "5-minute-production-app"'
+      when: always 
