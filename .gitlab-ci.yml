@@ -13,5 +13,5 @@ rptf:
   script:
     - rptf
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "5-minute-production-app"'
+    - if: '$CI_PROJECT_NAMESPACE == "gitlab-org/5-minute-production-app"'
       when: always 
