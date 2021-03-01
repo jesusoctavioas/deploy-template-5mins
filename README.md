@@ -66,6 +66,7 @@ You may use the [5 Minute Production Application Sisense Dashboard](https://app.
 
 ### Table of Contents
 
+1. [Video Overview](#video-overview)
 1. [Prerequisites](#prerequisites)
 1. [Infrastructure](#infrastructure)
 1. [Usage](#usage)
@@ -85,6 +86,10 @@ You may use the [5 Minute Production Application Sisense Dashboard](https://app.
 1. [Examples](#examples)
 1. [Feedback](#feedback)
 1. [Contributing](#contributing)
+
+### Video Overview
+
+[![Five Minute Production](http://img.youtube.com/vi/XcDN4bx7sNs/0.jpg)](http://www.youtube.com/watch?v=XcDN4bx7sNs "Five Minute Production")
 
 ### Prerequisites
 
