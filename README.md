@@ -12,27 +12,27 @@ And Heroku doesn't let you deploy on a hypercloud, which has [many advantages](#
 ### Stateful
 
 The 5 minute production app uses the managed stateful services of a hypercloud so your data is persisted and secure.
-By leveraging these managed services (dadatabases, caching, objects storage, etc.) you have less to maintain.
-Everything is provisioned through Terraform which has the following advanatges:
+By leveraging these managed services (databases, caching, objects storage, etc.) you have less to maintain.
+Everything is provisioned through Terraform which has the following advantages:
 
-1. Terraform is the most popular
-1. Terraform works accross platforms
-1. Terraform is easy to understand
-1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state)
-1. You avoid the cost and complexity of Kubernetes
+1. Terraform is the most popular IaC tool.
+1. Terraform works accross platforms.
+1. Terraform is well-documented.
+1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state).
+1. You avoid the cost and complexity of Kubernetes.
 1. You have complete control to customize and extend.
 
 ### Hypercloud
 
 Most people working in organizations use the three western hyper clouds (AWS, Azure, GCP) because: 
 
-1. They have a wide selection of managed stateful services (databases, caching, object storage, etc.)
+1. They have a wide selection of managed stateful services (databases, caching, object storage, etc.).
 1. At least one is probably already approved to be used in your organization.
 1. At least one is probably already budgeted for.
 1. They have a free tier which the 5 minute production app runs within.
 1. They are familiar to other people in your team and organization.
 1. They are reliable and secure.
-1. They are quickly innovating (machines with ARM processors, GPUs, TPUs, etc.)
+1. They are quickly innovating (machines with ARM processors, GPUs, TPUs, etc.).
 1. They have lower prices than services such as Heroku.
 1. They allow applications room to grow, no need to move from Heroku to AWS when it becomes popular.
 
