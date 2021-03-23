@@ -17,7 +17,6 @@ Everything is provisioned through Terraform which has the following advantages:
 
 1. Terraform is the most popular IaC tool.
 1. Terraform works accross platforms.
-1. Terraform is well-documented.
 1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state).
 1. You avoid the cost and complexity of Kubernetes.
 1. You have complete control to customize and extend.
