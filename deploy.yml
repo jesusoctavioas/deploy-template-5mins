@@ -33,6 +33,10 @@ terraform_apply:
   image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
   extends: .needs_aws_vars
   resource_group: terraform
+  rules:
+    - if: '$FMPA_SKIP_PROVISION != "True"'
+    - if: '$FMPA_SKIP_PROVISION != "true"'
+    - if: '$FMPA_SKIP_PROVISION != "TRUE"'
   before_script:
     - cp /*.tf .
     - cp /deploy.sh .

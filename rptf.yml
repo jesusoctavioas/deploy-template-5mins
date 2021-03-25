@@ -34,14 +34,24 @@ fail_db_migrate:
             terraform_destroy: skipped
 
 success:
-    trigger:
-        project_id: 22975621
-        branch: success
-    assertions:
-        pipeline_status: success
-        job_count: 3
-        job_status:
-            build: success
-            terraform_apply: success
-            deploy: success
+  trigger:
+    project_id: 22975621
+    branch: success
+  assertions:
+    pipeline_status: success
+    job_count: 3
+    job_status:
+      build: success
+      terraform_apply: success
+      deploy: success
 
+must_skip_provision:
+  trigger:
+    project_id: 22975621
+    branch: must_skip_provision
+  assertions:
+    pipeline_status: success
+    job_count: 2
+    job_status:
+      build: success
+      deploy: success
