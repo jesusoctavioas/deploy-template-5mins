@@ -30,7 +30,7 @@ cache:
 
 .needs_aws_vars_and_provision_enabled:
   rules:
-    - if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $FMPA_SKIP_PROVISION == "true"'
+    - if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $FMPA_SKIP_PROVISION != "true"'
       when: on_success
     - when: never
 
