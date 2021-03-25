@@ -28,15 +28,17 @@ cache:
       when: on_success
     - when: never
 
+.needs_aws_vars_and_provision_enabled:
+  rules:
+    - if: '$AWS_ACCESS_KEY_ID && $AWS_SECRET_ACCESS_KEY && $AWS_DEFAULT_REGION && $FMPA_SKIP_PROVISION == "true"'
+      when: on_success
+    - when: never
+
 terraform_apply:
   stage: provision
   image: registry.gitlab.com/gitlab-org/5-minute-production-app/deploy-template/master
-  extends: .needs_aws_vars
+  extends: .needs_aws_vars_and_provision_enabled
   resource_group: terraform
-  rules:
-    - if: '$FMPA_SKIP_PROVISION == "true"'
-      when: never
-    - when: on_success
   before_script:
     - cp /*.tf .
     - cp /deploy.sh .
