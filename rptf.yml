@@ -55,4 +55,4 @@ must_skip_provision:
     job_status:
       build: success
       deploy: success
-      terraform_destroy: manual
+      terraform_destroy: skipped
