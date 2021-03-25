@@ -34,8 +34,8 @@ terraform_apply:
   extends: .needs_aws_vars
   resource_group: terraform
   rules:
-    - if: '$FMPA_SKIP_PROVISION == "true"'
-      when: never
+    - if: '$FMPA_SKIP_PROVISION != "true"'
+      when: on_success
   before_script:
     - cp /*.tf .
     - cp /deploy.sh .
