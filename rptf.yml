@@ -51,7 +51,8 @@ must_skip_provision:
     branch: must_skip_provision
   assertions:
     pipeline_status: success
-    job_count: 2
+    job_count: 3
     job_status:
       build: success
       deploy: success
+      terraform_destroy: manual
