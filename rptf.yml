@@ -60,9 +60,9 @@ must_skip_provision:
     variables:
       AWS_DEFAULT_REGION: eu-north-1
   assertions:
-    pipeline_status: success
+    pipeline_status: manual
     job_count: 3
     job_status:
       build: success
       deploy: success
-      terraform_destroy: skipped
+      terraform_destroy: manual
