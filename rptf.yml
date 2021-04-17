@@ -1,6 +1,8 @@
 aws_vars_missing:
   trigger:
     project_id: 22488569
+    variables:
+      AWS_DEFAULT_REGION: eu-central-1
   assertions:
     pipeline_status: success
     job_count: 1
@@ -11,6 +13,8 @@ fail_db_init:
   trigger:
     project_id: 22975621
     branch: fail-db-init
+    variables:
+      AWS_DEFAULT_REGION: eu-west-1
   assertions:
     pipeline_status: failed
     job_count: 4
@@ -24,6 +28,8 @@ fail_db_migrate:
   trigger:
     project_id: 22975621
     branch: fail-db-migrate
+    variables:
+      AWS_DEFAULT_REGION: eu-west-2
   assertions:
     pipeline_status: failed
     job_count: 4
@@ -37,6 +43,8 @@ success:
   trigger:
     project_id: 22975621
     branch: success
+    variables:
+      AWS_DEFAULT_REGION: eu-west-3
   assertions:
     pipeline_status: success
     job_count: 3
@@ -49,6 +57,8 @@ must_skip_provision:
   trigger:
     project_id: 22975621
     branch: must_skip_provision
+    variables:
+      AWS_DEFAULT_REGION: eu-north-1
   assertions:
     pipeline_status: success
     job_count: 3
