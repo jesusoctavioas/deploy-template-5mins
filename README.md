@@ -6,7 +6,7 @@
 
 If you have written an application you should be able to deploy it within minutes with the 5-minute production app.
 Many other platforms are also quick, for example Heroku. 
-But configuring Heroku for a production application that needs statefulness (remembering users and data accross deploys) is a much longer process.
+But configuring Heroku for a production application that needs statefulness (remembering users and data across deploys) is a much longer process.
 And Heroku doesn't let you deploy on a hypercloud, which has [many advantages](#hypercloud).
 
 ### Stateful
@@ -16,7 +16,7 @@ By leveraging these managed services (databases, caching, objects storage, etc.)
 Everything is provisioned through Terraform which has the following advantages:
 
 1. Terraform is the most popular IaC tool.
-1. Terraform works accross platforms.
+1. Terraform works across platforms.
 1. Terraform state can be [stored and viewed in GitLab](https://docs.gitlab.com/ee/user/infrastructure/#gitlab-managed-terraform-state).
 1. You avoid the cost and complexity of Kubernetes.
 1. You have complete control to customize and extend.
@@ -34,6 +34,14 @@ Most people working in organizations use the three western hyper clouds (AWS, Az
 1. They are quickly innovating (machines with ARM processors, GPUs, TPUs, etc.).
 1. They have lower prices than services such as Heroku.
 1. They allow applications room to grow, no need to move from Heroku to AWS when it becomes popular.
+
+### Ops2Dev Philosophy
+
+The hardest thing about an application is not the initial deploy, it's maintaining the application over time.
+The 5 minute production app brings your Day 2 operations into Day 1 and makes [Day 2 operations simple](https://about.gitlab.com/topics/gitops/gitlab-enables-infrastructure-as-code/).
+Use managed services as you develop, and your infrastructure scales with you.
+
+We are working to optimize the 5 minute production app so that you'll be moving just as quickly as you would on a typical Day 1.
 
 ### Relation to Auto DevOps
 
